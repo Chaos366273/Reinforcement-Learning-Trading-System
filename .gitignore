@@ -1,0 +1,44 @@
+# Environment and caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pyo
+.cache/
+.matplotlib/
+
+# Generated data (large); ppo/saved_models/ included (one model for report 2026-02-21_18-55-56)
+ppo/saved_data/csv_data/*.csv
+ppo/saved_data/calculation_cache/
+ppo/saved_data/validation/
+ppo/saved_data/fundamental_cache/
+ppo/analytics/
+
+# Keep sample report; ignore rest of explanations/daily_reports after first push if desired
+# ppo/explanations/
+# ppo/daily_reports/
+
+# Logs
+logs/
+debug_logs/
+*.log
+tensorboard/
+ppo_tensorboard/
+
+# API caches
+alpha_vantage_cache/
+fred_cache/
+
+# IDE
+.cursor/
+.codex/
+.vscode/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local overrides (if added later)
+ppo/saved_data/dynamic_config_overrides.json
