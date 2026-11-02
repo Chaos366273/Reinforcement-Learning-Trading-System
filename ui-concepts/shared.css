@@ -269,6 +269,7 @@ body[data-state="loading"] .view-loading, body[data-state="empty"] .view-empty, 
 .dock-handle:active { transform: scale(0.97); }
 .dock-handle .bot { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(145deg, var(--gold-2), var(--gold)); color: var(--gold-ink); }
 .dock-handle .badge { background: var(--gold); color: var(--gold-ink); border-radius: 999px; font: 700 10px var(--mono); padding: 1px 6px; }
+.handle-short { display: none; }
 body.dock-open .dock-handle { opacity: 0; pointer-events: none; transform: translateY(12px); }
 .dock {
   position: fixed; left: var(--rail-w); right: 0; bottom: 0; z-index: 45; height: var(--dock-h); display: flex; flex-direction: column;
@@ -324,6 +325,10 @@ body[data-mode="pro"] .beginner-only { display: none !important; }
 }
 @media (max-width: 760px) {
   .app, body.rail-collapsed .app { grid-template-columns: minmax(0, 1fr); }
+  .topbar { flex-wrap: wrap; row-gap: 8px; }
+  .dock-handle { padding: 10px 12px 10px 10px; }
+  .handle-long { display: none; }
+  .handle-short { display: inline; }
   .rail { position: fixed; inset: 0 auto 0 0; width: 264px; transform: translateX(-102%); transition: transform 0.3s var(--ease); box-shadow: 30px 0 60px -20px rgba(0, 0, 0, 0.7); }
   body.nav-open .rail { transform: none; }
   body.nav-open .rail .rail-label, body.nav-open .rail .rail-group, body.nav-open .rail .session, body.nav-open .rail .rail-link .dot { display: revert !important; }

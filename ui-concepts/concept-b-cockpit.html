@@ -79,7 +79,7 @@
   .sector { display: grid; grid-template-columns: 84px 1fr 42px; gap: 10px; align-items: center; font-size: 12.5px; }
 
   @media (max-width: 1360px) { .cockpit { grid-template-columns: 280px minmax(0, 1fr); } .col.right { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 960px) { .cockpit { grid-template-columns: 1fr; padding: 16px; } .col.right { grid-template-columns: 1fr; } .hero-body { grid-template-columns: 1fr; padding: 18px; } .uni { grid-template-columns: repeat(6, 1fr); } .pipe { padding: 4px 12px 20px; } .step { font-size: 10.5px; } .step b { font-size: 11px; } .topnav { padding: 10px 14px; gap: 10px; } .nav-right .hide-sm { display: none; } }
+  @media (max-width: 960px) { .cockpit { grid-template-columns: 1fr; padding: 16px; } .col.right { grid-template-columns: 1fr; } .hero-body { grid-template-columns: 1fr; padding: 18px; } .uni { grid-template-columns: repeat(6, 1fr); } .pipe { padding: 4px 12px 20px; } .step { font-size: 10.5px; } .step b { font-size: 11px; } .topnav { padding: 10px 14px; gap: 10px; } .nav-right .search { display: none; } }
   @media (max-width: 520px) { .ring-wrap { width: 230px; height: 230px; } .uni { grid-template-columns: repeat(5, 1fr); } }
 </style>
 </head>
@@ -90,7 +90,7 @@
     <nav class="tabs" aria-label="Primary" id="tabs"></nav>
     <div class="nav-right">
       <div class="search hide-sm" role="button" tabindex="0" data-search style="min-width:180px"><span data-i="search" data-s="16"></span><span class="search-text">Jump to…</span><span class="kbd">⌘K</span></div>
-      <div class="seg hide-sm" role="group" aria-label="Detail level"><button data-mode-set="beginner">Simple</button><button data-mode-set="pro">Pro</button></div>
+      <div class="seg" role="group" aria-label="Detail level"><button data-mode-set="beginner">Simple</button><button data-mode-set="pro">Pro</button></div>
       <button class="icon-btn" data-theme-toggle></button>
       <span class="avatar" title="Session: FA">FA</span>
     </div>

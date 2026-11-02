@@ -132,7 +132,7 @@
   const TOOLS = [["/explain", "Explain a trade or decision"], ["/backtest", "Replay the agent on a date range"], ["/compare", "Compare two agent versions"], ["/risk", "Adjust risk limits (paper only)"], ["/report", "Open the latest unified report"]];
   const AGENTS = [["@Clawbot", "General assistant"], ["@Strategist", "Reads signals and regimes"], ["@RiskOfficer", "Stops, sizing, drawdown"], ["@Executor", "Order routing (paper)"]];
   PR.dock = () => `
-    <button class="dock-handle" data-dock-open aria-expanded="false" aria-controls="dock"><span class="bot">${PR.icon("spark", 15)}</span>Message Clawbot<span class="badge">1</span></button>
+    <button class="dock-handle" data-dock-open aria-expanded="false" aria-controls="dock"><span class="bot">${PR.icon("spark", 15)}</span><span class="handle-long">Message Clawbot</span><span class="handle-short">Clawbot</span><span class="badge">1</span></button>
     <section class="dock" id="dock" aria-label="Clawbot chat" role="complementary">
       <div class="dock-grip" data-dock-grip role="separator" aria-orientation="horizontal" aria-label="Resize chat" tabindex="0"></div>
       <div class="dock-h"><span class="bot">${PR.icon("spark", 15)}</span><div><b>Clawbot</b><br><small>Knows your paper book, the agent and today's regime</small></div>
