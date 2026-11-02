@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept A — Desk · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .kpis { display: grid; grid-template-columns: 1.5fr repeat(5, 1fr); gap: 14px; }
+  .kpi { padding: 16px 18px; position: relative; overflow: hidden; }
+  .kpi .v { font: 600 24px/1.15 var(--mono); letter-spacing: -0.03em; margin: 6px 0 4px; }
+  .kpi .d { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+  .kpi.hero { background: linear-gradient(160deg, var(--panel-2), var(--panel)); border-color: var(--gold-line); }
+  .kpi.hero .v { font-size: 32px; }
+  .kpi.hero::after { content: ""; position: absolute; right: -40px; top: -60px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, var(--gold-soft), transparent 70%); }
+  .grid-main { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(320px, 1fr); gap: 18px; }
+  .grid-low { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px; }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); align-items: center; }
+  .legend i { display: inline-block; width: 10px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+  .brain { display: flex; flex-direction: column; gap: 16px; }
+  .brain-top { display: flex; align-items: center; gap: 14px; }
+  .brain-orb { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; color: var(--gold-ink); background: linear-gradient(145deg, var(--gold-2), var(--gold)); box-shadow: 0 10px 30px -10px rgba(214, 179, 112, 0.8); }
+  .brain-top h3 { margin: 0; font-size: 20px; letter-spacing: -0.02em; }
+  .probs { display: grid; gap: 11px; }
+  .prob { display: grid; grid-template-columns: 52px 1fr 48px; gap: 12px; align-items: center; font-size: 12.5px; }
+  .prob .meter { height: 8px; }
+  .why { padding: 12px 14px; border-radius: 12px; background: var(--gold-soft); border: 1px solid var(--gold-line); color: var(--text); font-size: 13.5px; }
+  .why b { color: var(--gold-2); }
+  .gate { display: flex; flex-wrap: wrap; gap: 8px; }
+  .gate .pill i { background: var(--up); }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .fact { padding: 10px 12px; border-radius: 11px; background: var(--panel-2); border: 1px solid var(--line); }
+  .fact small { color: var(--muted); display: block; font-size: 11px; }
+  .fact b { font: 600 15px var(--mono); }
+
+  .feed { display: flex; flex-direction: column; }
+  .feed-item { display: grid; grid-template-columns: 48px 1fr auto; gap: 12px; align-items: center; padding: 11px 6px; border-top: 1px solid var(--line); border-radius: 10px; cursor: pointer; transition: background 0.15s; color: inherit; }
+  .feed-item:first-child { border-top: 0; }
+  .feed-item:hover { background: var(--panel-2); }
+  .feed-item:focus-visible { outline-offset: -2px; }
+  .feed-item small { color: var(--muted); display: block; font-size: 12px; }
+  .feed-item .t { font: 500 12px var(--mono); color: var(--muted); }
+  .feed-item.new { animation: rise 0.5s var(--ease); background: var(--gold-soft); }
+
+  .ctrl { display: flex; gap: 8px; align-items: center; }
+  .state-switch { display: flex; align-items: center; gap: 8px; }
+  .loading-grid { display: none; }
+  body[data-state="loading"] .loading-grid { display: grid; }
+  body[data-state="loading"] .state-card { display: none; }
+
+  @media (max-width: 1280px) { .kpis { grid-template-columns: repeat(3, 1fr); } .kpi.hero { grid-column: span 3; } .grid-main, .grid-low { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .kpis { grid-template-columns: 1fr 1fr; } .kpi.hero { grid-column: span 2; } .kpi.hero .v { font-size: 28px; } .state-switch .lbl { display: none; } .topbar .hide-sm2 { display: none; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" data-menu-btn aria-label="Open navigation"><span data-i="menu"></span></button>
+      <h1 class="page-title">Desk</h1>
+      <span class="pill gold hide-sm"><i></i>Paper · simulated</span>
+      <span class="pill up live hide-sm"><i></i>Market open · 15:46 ET</span>
+      <span class="top-spacer"></span>
+      <div class="search hide-sm2" role="button" tabindex="0" data-search><span data-i="search" data-s="16"></span><span class="search-text">Search tickers, trades, reports</span><span class="kbd">⌘K</span></div>
+      <div class="seg hide-sm" role="group" aria-label="Detail level"><button data-mode-set="beginner">Simple</button><button data-mode-set="pro">Pro</button></div>
+      <div class="has-pop">
+        <button class="btn btn-sm" data-pop="book-pop" aria-haspopup="true"><span data-i="wallet" data-s="15"></span><span class="hide-sm">Paper book</span></button>
+        <div class="pop" id="book-pop" role="dialog" aria-label="Paper book">
+          <div class="eyebrow">Paper book</div>
+          <div class="row"><span class="muted">Equity</span><b class="num" id="pb-eq"></b></div>
+          <div class="row"><span class="muted">Cash</span><b class="num" id="pb-cash"></b></div>
+          <div class="row"><span class="muted">Buying power</span><b class="num" id="pb-bp"></b></div>
+          <div class="row"><span class="muted">Open positions</span><b class="num">6</b></div>
+          <p class="muted" style="margin:10px 0 0;font-size:12px">Reachable from every page — no separate rail needed.</p>
+        </div>
+      </div>
+      <button class="icon-btn" data-theme-toggle></button>
+    </header>
+
+    <main class="content" id="main">
+      <div class="ctrl proto-note" style="justify-content:space-between;flex-wrap:wrap">
+        <span>Prototype · dummy data. Preview how the Desk behaves when things go right or wrong:</span>
+        <div class="state-switch"><span class="lbl muted">State</span>
+          <div class="seg" role="group" aria-label="Preview state"><button data-state-set="live">Live</button><button data-state-set="loading">Loading</button><button data-state-set="empty">Empty</button><button data-state-set="error">Error</button></div></div>
+      </div>
+
+      <!-- LOADING -->
+      <div class="state-block view-loading loading-grid" aria-busy="true">
+        <div class="kpis"><div class="skeleton" style="height:104px"></div><div class="skeleton" style="height:104px"></div><div class="skeleton" style="height:104px"></div><div class="skeleton" style="height:104px"></div><div class="skeleton" style="height:104px"></div><div class="skeleton" style="height:104px"></div></div>
+        <div class="grid-main"><div class="skeleton" style="height:380px"></div><div class="skeleton" style="height:380px"></div></div>
+        <div class="grid-low"><div class="skeleton" style="height:300px"></div><div class="skeleton" style="height:300px"></div></div>
+      </div>
+
+      <!-- EMPTY -->
+      <div class="state-block view-empty card state-card">
+        <div class="state-ico"><span data-i="inbox" data-s="26"></span></div>
+        <h3>Your desk is ready — the agent hasn't traded yet</h3>
+        <p>Start a paper session to give the agent <b class="mono">$100,000</b> of simulated money. Nothing real is ever at risk, and you can reset at any time.</p>
+        <div class="state-actions"><button class="btn btn-gold" data-state-set-go="live"><span data-i="bolt" data-s="16"></span>Start paper session</button><button class="btn" data-state-set-go="live"><span data-i="refresh" data-s="16"></span>Replay a recorded week</button></div>
+      </div>
+
+      <!-- ERROR -->
+      <div class="state-block view-error card state-card">
+        <div class="state-ico err"><span data-i="alert" data-s="26"></span></div>
+        <h3>We lost the connection to the agent</h3>
+        <p>Your paper positions are safe and stop-losses are still active on the broker side. Live updates will resume as soon as the stream reconnects.</p>
+        <div class="state-actions"><button class="btn btn-gold" data-state-set-go="live"><span data-i="refresh" data-s="16"></span>Retry connection</button><button class="btn" data-state-set-go="live">View last known snapshot</button></div>
+        <span class="pill warn"><i></i>Stream offline · last update 15:41:08 ET</span>
+      </div>
+
+      <!-- LIVE -->
+      <div class="view-live">
+        <section class="kpis" id="kpis" aria-label="Key figures"></section>
+
+        <div class="grid-main">
+          <section class="card" aria-labelledby="eq-h">
+            <div class="card-h"><div><h2 id="eq-h">Agent vs market</h2><div class="sub">Equity curve with every trade marked</div></div><span class="grow"></span>
+              <div class="legend hide-sm"><span><i style="background:var(--gold)"></i>PPO agent</span><span><i style="background:var(--hold)"></i>SPY</span></div>
+              <div class="seg" role="group" aria-label="Range" id="range"><button>1D</button><button class="on">1W</button><button>1M</button><button>3M</button></div></div>
+            <div class="card-b"><div class="chart" id="equity-chart"></div></div>
+          </section>
+
+          <section class="card" aria-labelledby="brain-h">
+            <div class="card-h"><h2 id="brain-h">Agent brain</h2><span class="grow"></span><span class="pill gold"><i></i>PPO · TCN</span></div>
+            <div class="card-b brain">
+              <div class="brain-top"><div class="brain-orb"><span data-i="spark" data-s="26"></span></div><div><div class="eyebrow">Now looking at</div><h3>NVDA <span class="muted" style="font-weight:500;font-size:14px">· $124.90</span></h3></div></div>
+              <div class="probs" id="probs"></div>
+              <div class="why beginner-only"><b>In plain English:</b> the agent likes NVDA because volume is running 1.7× normal and momentum is rising, in a calm uptrend. It already holds 60 shares (7.2% of the book, cap 7.5%), so it won't buy more right now.</div>
+              <div class="pro-only">
+                <div class="eyebrow" style="margin-bottom:8px">Gating pipeline</div>
+                <div class="gate"><span class="pill up"><i></i>Confidence 0.31 &gt; 0.25 (high)</span><span class="pill up"><i></i>Cooldown clear</span><span class="pill up"><i></i>Regime allows BUY</span><span class="pill warn"><i></i>Near position cap · 7.2% of 7.5%</span></div>
+              </div>
+              <div class="facts">
+                <div class="fact"><small>Regime</small><b>Bull · Trend</b></div>
+                <div class="fact"><small>Volatility</small><b>1.4% <span class="muted" style="font-weight:500">normal</span></b></div>
+                <div class="fact pro-only"><small>Deterministic HOLD share</small><b>62%</b></div>
+                <div class="fact pro-only"><small>Policy entropy</small><b>0.84</b></div>
+                <div class="fact beginner-only"><small>Today's trades</small><b>6</b></div>
+                <div class="fact beginner-only"><small>Stop-loss safety net</small><b class="up">On</b></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-low">
+          <section class="card" aria-labelledby="pos-h">
+            <div class="card-h"><h2 id="pos-h">Open positions</h2><span class="sub">6 holdings · paper</span><span class="grow"></span><button class="btn btn-sm btn-ghost" data-soon="Portfolio">View all <span data-i="next" data-s="14"></span></button></div>
+            <div class="card-b"><div class="tbl-wrap"><table class="tbl" id="pos-table"><thead><tr><th>Symbol</th><th class="r">Qty</th><th class="r pro-only">Avg</th><th class="r">Last</th><th class="r">P&amp;L</th><th class="pro-only">Trend</th><th class="r pro-only">Stop</th></tr></thead><tbody></tbody></table></div></div>
+          </section>
+
+          <section class="card" aria-labelledby="feed-h">
+            <div class="card-h"><h2 id="feed-h">Decision feed</h2><span class="pill up live"><i></i>Live</span><span class="grow"></span><span class="sub">Select a row for the full why</span></div>
+            <div class="card-b"><div class="feed" id="feed"></div></div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+  const D = PR.data;
+  PR.mount({ active: "desk" });
+
+  // paper book popover
+  PR.$("#pb-eq").textContent = PR.usd(D.equity); PR.$("#pb-cash").textContent = PR.usd(D.cash); PR.$("#pb-bp").textContent = PR.usd(D.buyingPower);
+
+  // KPIs
+  const openPnl = D.positions.reduce((a, p) => a + p.pnl, 0);
+  const kpis = [
+    ["hero", "Paper equity", PR.usd(D.equity), `<span class="${PR.cls(D.dayPnl)}">${PR.sgn(D.dayPnl)} (${PR.pct((D.dayPnl / (D.equity - D.dayPnl)) * 100)})</span> today`, "wallet"],
+    ["", "Open P&L", `<span class="${PR.cls(openPnl)}">${PR.sgn(openPnl)}</span>`, "6 positions", ""],
+    ["", "Max drawdown", `<span class="down">-3.9%</span>`, "Now -1.8%", ""],
+    ["", "Sharpe", "1.94", "Deterministic eval", ""],
+    ["", "Win rate", "61%", "23 of 38 closed", ""],
+    ["", "vs SPY", `<span class="up">+2.9%</span>`, "Since start", ""],
+  ];
+  PR.$("#kpis").innerHTML = kpis.map(([c, l, v, d]) => `<div class="card kpi ${c}"><div class="eyebrow">${l}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join("");
+
+  // equity chart
+  const ranges = { "1D": [78, 11, 100000, 100820, 100710], "1W": [120, 12, 100000, D.equity, 101880], "1M": [140, 13, 100000, 106940, 102610], "3M": [160, 14, 100000, 112330, 104050] };
+  const xl = { "1D": ["09:30", "11:00", "12:30", "14:00", "15:46"], "1W": ["Mon", "Tue", "Wed", "Thu", "Fri"], "1M": ["Oct 3", "Oct 10", "Oct 17", "Oct 24", "Oct 31"], "3M": ["Aug", "Sep", "Oct"] };
+  let redraw;
+  function chart(k) {
+    const [n, seed, s, e, b] = ranges[k]; const agent = PR.series(n, seed, s, e, 0.0042), spy = PR.series(n, seed + 40, s, b, 0.003);
+    const r = PR.rng(seed + 3), markers = []; for (let i = 6; i < n - 4; i += Math.round(n / 9)) markers.push({ i: i + Math.floor(r() * 3), a: r() > 0.42 ? "BUY" : "SELL" });
+    PR.$("#equity-chart").innerHTML = "";
+    PR.lineChart(PR.$("#equity-chart"), { id: "eq" + k, height: 300, label: "Equity curve of the PPO agent versus SPY", series: [{ data: agent, color: "--gold", w: 2.2 }, { data: spy, color: "--hold", w: 1.6, dash: true }], markers, xlabels: xl[k], fmt: (v) => "$" + (v / 1000).toFixed(1) + "k",
+      tip: (i) => `<div class="eyebrow">${xl[k][Math.round((i / (n - 1)) * (xl[k].length - 1))]}</div><div class="num"><span class="gold">Agent</span> ${PR.usd(agent[i], 0)}</div><div class="num"><span class="hold">SPY</span> ${PR.usd(spy[i], 0)}</div><div class="num ${PR.cls(agent[i] - spy[i])}">${PR.sgn(agent[i] - spy[i], 0)} vs SPY</div>` });
+  }
+  chart("1W");
+  PR.$$("#range button").forEach((b) => b.addEventListener("click", () => { PR.$$("#range button").forEach((x) => x.classList.toggle("on", x === b)); chart(b.textContent); }));
+
+  // probabilities
+  const probs = [["BUY", 48, "var(--up)"], ["HOLD", 41, "var(--hold)"], ["SELL", 11, "var(--down)"]];
+  PR.$("#probs").innerHTML = probs.map(([l, v, c]) => `<div class="prob"><span class="act ${l.toLowerCase()}">${l}</span><div class="meter" role="meter" aria-valuenow="${v}" aria-valuemin="0" aria-valuemax="100" aria-label="${l} probability"><i style="width:0;background:${c}" data-w="${v}"></i></div><b class="num" style="text-align:right">${v}%</b></div>`).join("");
+  requestAnimationFrame(() => setTimeout(() => PR.$$("#probs .meter i").forEach((i) => (i.style.width = i.dataset.w + "%")), 200));
+
+  // positions
+  PR.$("#pos-table tbody").innerHTML = D.positions.map((p) => {
+    const tr = PR.series(18, PR.hash(p.s), p.avg, p.last, 0.012);
+    return `<tr><td><div class="sym"><span class="tick">${p.s.slice(0, 2)}</span><div><b>${p.s}</b><br><span>${p.n}</span></div></div></td><td class="r num">${p.q}</td><td class="r num pro-only">${p.avg.toFixed(2)}</td><td class="r num">${p.last.toFixed(2)}</td>
+    <td class="r num ${PR.cls(p.pnl)}"><b>${PR.sgn(p.pnl)}</b><br><span style="font-size:11.5px">${PR.pct(p.pnlPct)}</span></td><td class="pro-only">${PR.spark(tr, 76, 26, p.pnl >= 0 ? "var(--up)" : "var(--down)")}</td><td class="r num muted pro-only">${p.stop.toFixed(2)}</td></tr>`; }).join("");
+
+  // feed (links to the explainer)
+  function feedItem(t, isNew) {
+    const act = t.a.toLowerCase(), detail = t.a === "HOLD" ? "No order sent" : `${t.q} × ${t.s} @ ${t.p.toFixed(2)}`;
+    return `<a class="feed-item${isNew ? " new" : ""}" href="concept-c-explainer.html"><span class="act ${act}">${t.a}</span><div><b>${t.s}</b> <span class="muted">· ${t.why}</span><small class="num">${detail}</small></div><div style="text-align:right"><span class="t">${t.t}</span><small class="pro-only num">conf ${t.conf.toFixed(2)} · ${t.tier}</small></div></a>`;
+  }
+  PR.$("#feed").innerHTML = [...D.trades].reverse().map((t) => feedItem(t)).join("");
+  setTimeout(() => { if (document.body.dataset.state !== "live") return; PR.$("#feed").insertAdjacentHTML("afterbegin", feedItem({ a: "HOLD", s: "NVDA", q: 0, p: 0, conf: 0.18, tier: "Medium", why: "Near position cap", t: "15:46" }, true)); }, 6000);
+
+  // empty / error → live
+  PR.$$("[data-state-set-go]").forEach((b) => b.addEventListener("click", () => { PR.setState("loading"); setTimeout(() => PR.setState("live"), 1100); }));
+  document.addEventListener("pr:state", () => document.dispatchEvent(new Event("pr:theme")));
+  if (document.body.dataset.state === "live") { PR.setState("loading"); setTimeout(() => PR.setState("live"), 700); }
+</script>
+</body>
+</html>
