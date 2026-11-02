@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept C — Decision Explainer · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .crumbs { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+  .crumbs a:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+  .head { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .head .big-act { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 18px; background: var(--up-soft); color: var(--up); font: 700 15px var(--mono); letter-spacing: 0.04em; border: 1px solid color-mix(in srgb, var(--up) 35%, transparent); }
+  .head h1 { margin: 0; font-size: 28px; letter-spacing: -0.03em; }
+  .head .meta { color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+  .head .nav { margin-left: auto; display: flex; gap: 8px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr); gap: 18px; }
+  .col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+  .reasons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .reason { padding: 14px; border-radius: 14px; background: var(--panel-2); border: 1px solid var(--line); transition: 0.18s; }
+  .reason:hover { border-color: var(--gold-line); transform: translateY(-2px); }
+  .reason .n { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--gold-soft); color: var(--gold-2); font: 700 12px var(--mono); margin-bottom: 10px; }
+  .reason > b { display: block; margin-bottom: 4px; }
+  .reason p { margin: 0; color: var(--muted); font-size: 13px; }
+
+  .wf { display: grid; gap: 4px; }
+  .wf-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 60px; gap: 12px; align-items: center; padding: 6px 4px; border-radius: 8px; font-size: 12.5px; }
+  .wf-row:hover { background: var(--panel-2); }
+  .wf-row .nm small { display: block; color: var(--muted); font: 500 11px var(--mono); }
+  .wf-track { position: relative; height: 18px; }
+  .wf-track::before { content: ""; position: absolute; inset: 8px 0; background: var(--line); border-radius: 2px; }
+  .wf-bar { position: absolute; top: 2px; bottom: 2px; border-radius: 5px; transform-origin: left; animation: grow 0.7s var(--ease) both; }
+  @keyframes grow { from { transform: scaleX(0); opacity: 0; } }
+  .wf-bar.pos { background: linear-gradient(90deg, color-mix(in srgb, var(--up) 55%, transparent), var(--up)); }
+  .wf-bar.neg { background: linear-gradient(90deg, var(--down), color-mix(in srgb, var(--down) 55%, transparent)); }
+  .wf-bar.tot { background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 60%, transparent), var(--gold-2)); }
+  .wf-bar.base { background: var(--panel-3); border: 1px solid var(--line-2); }
+  .wf-row.final { border-top: 1px dashed var(--line-2); margin-top: 6px; padding-top: 12px; font-weight: 600; }
+
+  .checks { display: grid; gap: 4px; }
+  .chk { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: center; padding: 10px 6px; border-top: 1px solid var(--line); }
+  .chk:first-child { border-top: 0; }
+  .chk .ico { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--up-soft); color: var(--up); }
+  .chk small { color: var(--muted); display: block; font-size: 12px; }
+  .chk .val { font: 500 12px var(--mono); color: var(--text-2); }
+
+  .out { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .out .fact { padding: 12px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--line); }
+  .out small { color: var(--muted); font-size: 11px; display: block; }
+  .out b { font: 600 17px var(--mono); }
+  .stops { margin-top: 14px; display: grid; gap: 8px; font-size: 12.5px; }
+  .stopbar { position: relative; height: 10px; border-radius: 6px; background: linear-gradient(90deg, var(--down-soft), var(--panel-3) 30%, var(--up-soft)); border: 1px solid var(--line); }
+  .stopbar i { position: absolute; top: -4px; width: 2px; height: 16px; background: var(--text-2); border-radius: 2px; }
+  .stopbar i.now { background: var(--gold); width: 4px; border-radius: 4px; box-shadow: 0 0 10px var(--gold); }
+  .stopbar em { position: absolute; top: 16px; transform: translateX(-50%); font: 500 10.5px var(--mono); color: var(--muted); font-style: normal; white-space: nowrap; }
+  .cf { padding: 14px; border-radius: 14px; background: var(--hold-soft); }
+  .cf b { color: var(--hold); }
+  .disc { font-size: 12px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; }
+
+  @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .reasons { grid-template-columns: 1fr; } .wf-row { grid-template-columns: 106px minmax(0, 1fr) 50px; } .out { grid-template-columns: 1fr 1fr; } .head .nav { margin-left: 0; width: 100%; } .head h1 { font-size: 22px; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" data-menu-btn aria-label="Open navigation"><span data-i="menu"></span></button>
+      <a class="btn btn-sm btn-ghost" href="concept-a-desk.html" id="back"><span data-i="back" data-s="15"></span>Desk</a>
+      <span class="top-spacer"></span>
+      <div class="seg hide-sm" role="group" aria-label="Detail level"><button data-mode-set="beginner">Simple</button><button data-mode-set="pro">Pro</button></div>
+      <button class="icon-btn" data-theme-toggle></button>
+    </header>
+
+    <main class="content">
+      <div class="crumbs" aria-label="Breadcrumb"><a href="concept-a-desk.html">Desk</a><span data-i="chevr" data-s="14"></span><a href="concept-a-desk.html">Decision feed</a><span data-i="chevr" data-s="14"></span><span style="color:var(--text)">Trade #1042</span></div>
+
+      <div class="head">
+        <div class="big-act">BUY</div>
+        <div>
+          <h1>Bought 60 NVDA at $118.40</h1>
+          <div class="meta"><span class="num">Tue 09:48 ET</span><span>Paper account</span><span class="pill up"><i></i>Passed high-confidence gate</span><span class="pill gold pro-only"><i></i>PPO-TCN v7 · deterministic</span></div>
+        </div>
+        <div class="nav"><button class="btn btn-sm" id="prev"><span data-i="back" data-s="14"></span>Older</button><button class="btn btn-sm" id="next">Newer<span data-i="next" data-s="14"></span></button></div>
+      </div>
+
+      <div class="layout">
+        <div class="col">
+          <section class="card">
+            <div class="card-h"><div><h2>Why the agent bought</h2><div class="sub">The three things that mattered most</div></div></div>
+            <div class="card-b"><div class="reasons">
+              <div class="reason"><div class="n">1</div><b>Heavy buying volume</b><p>Volume ran <b class="mono">1.7×</b> its normal level. Big volume behind a rising price is a strong "real move" signal.</p></div>
+              <div class="reason"><div class="n">2</div><b>Momentum turning up</b><p>MACD crossed above its signal line and the histogram was growing — buyers were gaining control.</p></div>
+              <div class="reason"><div class="n">3</div><b>Market on its side</b><p>SPY was up <b class="mono">0.6%</b> in a calm trend, so the backdrop supported taking a long position.</p></div>
+            </div></div>
+          </section>
+
+          <section class="card">
+            <div class="card-h"><div><h2>How the decision was built</h2><div class="sub">Each feature pushes the BUY probability up or down (SHAP)</div></div><span class="grow"></span><span class="pill hold hide-sm"><i></i>Start 21% → end 48%</span></div>
+            <div class="card-b"><div class="wf" id="wf" role="table" aria-label="Feature contributions to BUY probability"></div></div>
+          </section>
+
+          <section class="card">
+            <div class="card-h"><div><h2>Price around the trade</h2><div class="sub">NVDA · 5-minute bars</div></div></div>
+            <div class="card-b"><div class="chart" id="chart"></div></div>
+          </section>
+        </div>
+
+        <div class="col">
+          <section class="card">
+            <div class="card-h"><h2>Safety checks</h2><span class="grow"></span><span class="pill up"><i></i>All passed</span></div>
+            <div class="card-b checks" id="checks"></div>
+          </section>
+
+          <section class="card">
+            <div class="card-h"><h2>How it's going</h2><span class="grow"></span><span class="pill up"><i></i>Open</span></div>
+            <div class="card-b">
+              <div class="out"><div class="fact"><small>Unrealised P&amp;L</small><b class="up">+$390.00</b></div><div class="fact"><small>Return</small><b class="up">+5.49%</b></div><div class="fact"><small>Held for</small><b>5h 47m</b></div></div>
+              <div class="stops">
+                <div class="eyebrow">Risk guard-rails</div>
+                <div style="height:16px"></div>
+                <div class="stopbar" id="stopbar" aria-hidden="true"></div>
+                <div style="height:16px"></div>
+                <p class="muted" style="margin:0">If NVDA falls to <b class="mono" style="color:var(--text)">$115.28</b> the trailing stop sells automatically — that locks in about <b class="up mono">-2.6%</b> from entry. The hard stop sits at <b class="mono" style="color:var(--text)">$106.56</b>.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card cf pro-only">
+            <div class="eyebrow" style="color:var(--hold)">Counterfactual</div>
+            <p style="margin:6px 0 0">Had the agent <b>held</b>, it would have missed <b class="up mono">+$390</b> so far. The next-best action was <b>HOLD at 41%</b> — a close call, which is why the gate asks for confidence 0.31 &gt; 0.25 before acting.</p>
+          </section>
+
+          <section class="card">
+            <div class="card-b" style="display:grid;gap:10px">
+              <button class="btn btn-gold" id="ask"><span data-i="spark" data-s="16"></span>Ask Clawbot about this trade</button>
+              <a class="btn" href="concept-a-desk.html"><span data-i="back" data-s="16"></span>Back to Desk</a>
+              <div class="disc"><span data-i="info" data-s="15"></span><span>Simulated paper trade for education. Explanations describe the model, not a guarantee of future results.</span></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+  PR.mount({ active: "desk" });
+
+  // SHAP waterfall: base 0.21 → 0.48
+  const base = 0.21, F = [
+    ["Volume ratio", "1.7× avg", 0.07], ["MACD histogram", "+0.42", 0.05], ["SPY context", "+0.6%", 0.05], ["RSI (14)", "58.2", 0.04], ["MACD cross", "bullish", 0.03],
+    ["5-min return", "+0.4%", 0.03], ["Bollinger z-score", "+0.8", 0.01], ["No open position", "flat", 0.01], ["Time of day", "09:48", 0.01], ["Bollinger width", "0.034", -0.01], ["ATR (volatility)", "2.1%", -0.02],
+  ];
+  const max = 0.56, pctL = (v) => (v / max) * 100;
+  let acc = base, rows = `<div class="wf-row"><div class="nm">Average case<small>model baseline</small></div><div class="wf-track"><div class="wf-bar base" style="left:0;width:${pctL(base)}%"></div></div><b class="num" style="text-align:right">${base.toFixed(2)}</b></div>`;
+  F.forEach(([n, raw, v], i) => { const a = acc, b = acc + v; acc = b; const l = Math.min(a, b);
+    rows += `<div class="wf-row"><div class="nm">${n}<small class="pro-only">${raw}</small></div><div class="wf-track"><div class="wf-bar ${v >= 0 ? "pos" : "neg"}" style="left:${pctL(l)}%;width:${pctL(Math.abs(v))}%;animation-delay:${i * 60}ms"></div></div><b class="num ${PR.cls(v)}" style="text-align:right">${v >= 0 ? "+" : "−"}${Math.abs(v).toFixed(2)}</b></div>`; });
+  rows += `<div class="wf-row final"><div class="nm">Final BUY probability<small>HOLD 41% · SELL 11%</small></div><div class="wf-track"><div class="wf-bar tot" style="left:0;width:${pctL(acc)}%;animation-delay:${F.length * 60}ms"></div></div><b class="num gold" style="text-align:right">${acc.toFixed(2)}</b></div>`;
+  PR.$("#wf").innerHTML = rows;
+
+  // checks
+  const checks = [["Signal confidence", "0.31 is above the 0.25 'high' gate", "0.31 > 0.25"], ["Market regime", "Bull trend, normal volatility — BUY allowed", "Bull · calm"], ["Trade cooldown", "No recent trade in NVDA", "Clear"], ["Position size", "Within the 7.5% per-stock cap", "7.2%"], ["Stop-loss armed", "Trailing 8% on top of a 10% hard stop", "Set"], ["Costs included", "Simulated Alpaca fee 0.0024% per trade", "$0.17"]];
+  PR.$("#checks").innerHTML = checks.map(([a, b, c]) => `<div class="chk"><span class="ico">${PR.icon("check", 15)}</span><div><b>${a}</b><small>${b}</small></div><span class="val pro-only">${c}</span></div>`).join("");
+
+  // stop bar: entry 118.40, now 124.90, trailing 115.28, hard 106.56, high 125.30
+  const lo = 104, hi = 128, at = (v) => ((v - lo) / (hi - lo)) * 100;
+  PR.$("#stopbar").innerHTML = [[106.56, "hard stop", 0], [115.28, "trailing", 0], [118.4, "entry", 1], [124.9, "now", 0]].map(([v, l, up]) => `<i style="left:${at(v)}%"></i><em style="left:${at(v)}%;${up ? "top:-24px" : ""}">${l} ${v.toFixed(2)}</em>`).join("").replace(/<i style="left:[\d.]+%"><\/i>(?=<em[^>]*>now)/, `<i class="now" style="left:${at(124.9)}%"></i>`);
+
+  // price chart with entry marker
+  const n = 78, entry = 40, px = PR.series(n, 5, 116.9, 124.9, 0.0045); const k = px[entry]; for (let i = entry; i < n; i++) px[i] += 118.4 - k; for (let i = 0; i < entry; i++) px[i] += (118.4 - k) * 0.4; const end = px[n - 1], fix = 124.9 - end; for (let i = entry; i < n; i++) px[i] += (fix * (i - entry)) / (n - 1 - entry);
+  const times = (i) => { const m = 9 * 60 + 15 + i * 5; return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); };
+  PR.lineChart(PR.$("#chart"), { id: "cc", height: 230, series: [{ data: px, color: "--hold", w: 2 }], markers: [{ i: entry, a: "BUY", s: "NVDA", p: "118.40" }], xlabels: ["09:15", "10:45", "12:15", "13:45", "15:46"], fmt: (v) => "$" + v.toFixed(0), tip: (i) => `<div class="eyebrow">${times(i)} ET</div><div class="num">${PR.usd(px[i])}</div>` });
+
+  // prev / next across the real trade list (never a dead end)
+  const ids = PR.data.trades.map((t) => t.id); let idx = ids.indexOf(1042);
+  const go = (d) => { const j = idx + d; if (j < 0 || j >= ids.length) return PR.toast(d < 0 ? "That's the oldest trade today." : "That's the newest trade."); PR.toast(`Trade #${ids[j]} — in the product this swaps the page content in place.`); };
+  PR.$("#prev").onclick = () => go(-1); PR.$("#next").onclick = () => go(1);
+  PR.$("#ask").onclick = () => PR.openDock("/explain 1042 ");
+  document.addEventListener("keydown", (e) => { if (e.target.closest("textarea,input")) return; if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1); if (e.key === "Backspace") location.href = "concept-a-desk.html"; });
+</script>
+</body>
+</html>
