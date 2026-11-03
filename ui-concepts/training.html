@@ -2,115 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bot builder · PathRise</title>
+<title>Build a bot · PathRise</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
 </head>
 <body>
 <div class="app"><main class="page">
-  <div class="page-head"><div><h1>Build a bot</h1><p>Five choices. The plan on the right is what the worker will actually run.</p></div></div>
+  <div class="page-head"><div><h1>Build a bot</h1><p>The plan on the right is the only copy. Clawbot proposes edits. You apply them.</p></div></div>
   <div class="steps" id="pips"></div>
   <div class="grid-2">
     <section class="card"><div class="card-b" id="step"></div>
-      <div class="card-b" style="display:flex;gap:8px;padding-top:0"><button class="btn" id="back">Back</button><button class="btn" id="draft">Save draft</button><button class="btn btn-gold" id="go">Continue</button></div>
+      <div class="card-b" style="display:flex;gap:8px;flex-wrap:wrap;padding-top:0"><button class="btn" id="back">Back</button><button class="btn" id="draft">Save draft</button><button class="btn btn-gold" id="go">Continue</button></div>
     </section>
-    <aside class="card"><div class="card-h"><h2>Training plan</h2><span class="pill gold" id="cost">0 credits</span></div>
-      <div class="card-b plan" id="plan"></div></aside>
+    <aside class="card" id="plan"></aside>
   </div>
 </main></div>
-<script src="shared.js"></script><script src="site.js"></script>
-<script>
-PR.bootSite({ shell: true, active: "training" });
-const names = ["Universe", "Style", "Guardrails", "Teach", "Budget"];
-const tech = ["NVDA","MSFT","AAPL","GOOGL","META","AMD","AVGO","CRM"];
-const defensive = ["JNJ","UNH","PFE","LLY","ABBV","KO","WMT","COST"];
-const plan = { names: new Set(tech), style: "balanced", cap: 15, stop: 8, dd: 25, mentor: "rules", budget: "quick", lr: 0.0003, nsteps: 2048, batch: 512, gamma: 0.995, ent: 0.02, clip: 0.15 };
-const q = new URLSearchParams(location.search); if (q.get("template")) plan.style = q.get("template");
-let i = 0, error = "";
-const styles = {
-  cautious: ["Cautious", "Fewer trades. Holds winners longer. Max 8% per name.", "hold penalty −0.03 · trading incentive 0.20"],
-  balanced: ["Balanced", "The research default. Max 15% per name.", "hold penalty −0.10 · trading incentive 0.40"],
-  aggressive: ["Aggressive", "Pays more for taking a trade. Same 15% cap.", "hold penalty −0.20 · trading incentive 1.50"]
-};
-const budgets = {
-  quick: ["Quick", "8 names · 20,000 steps · a few minutes", "0 credits", 20000],
-  standard: ["Standard", "Your universe · one GPU run · leave and return", "12 credits", 100000],
-  deep: ["Deep", "Full window, regime slices, stress tests", "40 credits", 500000]
-};
-function chips(list, on) {
-  return `<div style="display:flex;flex-wrap:wrap;gap:6px">${list.map((t) => `<button class="pill ${on.has(t) ? "gold" : ""}" data-tick="${t}" aria-pressed="${on.has(t)}">${t}</button>`).join("")}</div>`;
-}
-function paint() {
-  document.getElementById("pips").innerHTML = names.map((n, k) => `<span class="step-pip ${k < i ? "done" : ""} ${k === i ? "on" : ""}"><span class="n">${k + 1}</span>${n}</span>`).join("");
-  const err = error ? `<div class="banner" role="alert">${error}</div>` : "";
-  const bodies = [
-    `${err}<h2>Which names can it touch?</h2><p class="muted">At least 4. Presets fill the set. Pro can still add from the 30.</p>
-      <div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn btn-sm" data-pre="tech">Big Tech</button><button class="btn btn-sm" data-pre="def">Defensive</button><button class="btn btn-sm" data-pre="mix">Mixed 30</button></div>
-      ${chips(PR.data.tickers, plan.names)}`,
-    `<h2>How should it behave?</h2><div class="grid-3">${Object.entries(styles).map(([id, s]) => `<button class="choice" data-style="${id}" aria-pressed="${plan.style===id}"><b>${s[0]}</b><span>${s[1]}</span><span class="pro-only num">${s[2]}</span></button>`).join("")}</div>`,
-    `<h2>Guardrails, in sentences</h2>
-      <div class="slider"><label>Largest single name · <b class="num">${plan.cap}%</b></label><input type="range" min="5" max="15" value="${plan.cap}" data-k="cap"><div class="sent">No name can grow past ${plan.cap}% of the paper book. The research default is 15%.</div></div>
-      <div class="slider"><label>Trailing stop · <b class="num">${plan.stop}%</b></label><input type="range" min="4" max="12" value="${plan.stop}" data-k="stop"><div class="sent">A winner is sold if it gives back ${plan.stop}% from its high. A hard stop sits wider, near 10%.</div></div>
-      <div class="slider"><label>Stop the session if drawdown hits · <b class="num">${plan.dd}%</b></label><input type="range" min="8" max="25" value="${plan.dd}" data-k="dd"><div class="sent">Worst case in this simulation: the book can fall ${plan.dd}% before new buys are blocked.</div></div>`,
-    `<h2>Teach it first?</h2><div class="grid-3">
-      <button class="choice" data-men="rules" aria-pressed="${plan.mentor==="rules"}"><b>Rules mentor</b><span>Behavioural cloning from a conservative teacher. About 70% holds.</span></button>
-      <button class="choice" data-men="trend" aria-pressed="${plan.mentor==="trend"}"><b>Trend mentor</b><span>Only acts when MACD and volume agree. Fewer, cleaner trades.</span></button>
-      <button class="choice" data-men="none" aria-pressed="${plan.mentor==="none"}"><b>Skip</b><span>PPO starts from scratch. Slower, and more likely to freeze on HOLD early.</span></button></div>`,
-    `<h2>How long should it practice?</h2><div class="budget">${Object.entries(budgets).map(([id, b]) => `<button class="choice" data-bud="${id}" aria-pressed="${plan.budget===id}"><b>${b[0]}</b><span>${b[1]}</span><span class="num">${b[2]}</span></button>`).join("")}</div>
-      <button class="btn btn-sm pro-only" id="hyp" style="margin-top:10px">Hyperparameters</button>
-      <div class="drawer pro-only" id="drawer">
-        ${[["Learning rate", "lr", 0.0003], ["Rollout steps", "nsteps", 2048], ["Batch", "batch", 512], ["Gamma", "gamma", 0.995], ["Entropy coef", "ent", 0.02], ["Clip range", "clip", 0.15]].map(([l, k, v]) => `<div class="field"><label>${l}</label><input class="num" data-h="${k}" value="${plan[k]}"></div>`).join("")}
-      </div>`
-  ];
-  document.getElementById("step").innerHTML = bodies[i];
-  document.getElementById("go").textContent = i === 4 ? "Start training" : "Continue";
-  const b = budgets[plan.budget];
-  document.getElementById("cost").textContent = b[2];
-  document.getElementById("plan").innerHTML = [
-    ["Bot", "New · " + styles[plan.style][0]],
-    ["Names", plan.names.size + " selected"],
-    ["Cap / stop / halt", plan.cap + "% · " + plan.stop + "% · " + plan.dd + "%"],
-    ["Mentor", plan.mentor === "none" ? "None" : plan.mentor],
-    ["Steps", b[3].toLocaleString()],
-    ["Exam", "Held-out window, deterministic headline"]
-  ].map(([k, v]) => `<div class="row"><span class="muted">${k}</span><b>${v}</b></div>`).join("");
-  const hyp = document.getElementById("hyp");
-  if (hyp) hyp.onclick = () => document.getElementById("drawer").classList.toggle("open");
-}
-paint();
-document.getElementById("step").addEventListener("click", (e) => {
-  const t = e.target.closest("[data-tick]"); if (t) { plan.names.has(t.dataset.tick) ? plan.names.delete(t.dataset.tick) : plan.names.add(t.dataset.tick); error = ""; paint(); }
-  const pre = e.target.closest("[data-pre]"); if (pre) { plan.names = new Set(pre.dataset.pre === "tech" ? tech : pre.dataset.pre === "def" ? defensive : PR.data.tickers); paint(); }
-  const st = e.target.closest("[data-style]"); if (st) { plan.style = st.dataset.style; if (plan.style === "cautious") plan.cap = Math.min(plan.cap, 8); paint(); }
-  const m = e.target.closest("[data-men]"); if (m) { plan.mentor = m.dataset.men; paint(); }
-  const bu = e.target.closest("[data-bud]"); if (bu) { plan.budget = bu.dataset.bud; paint(); }
-});
-document.getElementById("step").addEventListener("input", (e) => {
-  const k = e.target.dataset.k;
-  if (k) {
-    plan[k] = +e.target.value;
-    const label = e.target.previousElementSibling;
-    if (label) label.querySelector("b").textContent = plan[k] + "%";
-    const sent = e.target.nextElementSibling;
-    const copy = {
-      cap: `No name can grow past ${plan.cap}% of the paper book. The research default is 15%.`,
-      stop: `A winner is sold if it gives back ${plan.stop}% from its high. A hard stop sits wider, near 10%.`,
-      dd: `Worst case in this simulation: the book can fall ${plan.dd}% before new buys are blocked.`,
-    };
-    if (sent) sent.textContent = copy[k];
-    document.getElementById("plan").querySelectorAll(".row")[2].lastElementChild.textContent = `${plan.cap}% · ${plan.stop}% · ${plan.dd}%`;
-  }
-  if (e.target.dataset.h) plan[e.target.dataset.h] = e.target.value;
-});
-document.getElementById("back").onclick = () => { if (i === 0) location.href = "desk.html"; else { i--; error = ""; paint(); } };
-document.getElementById("draft").onclick = () => PR.toast("Draft saved on this desk. Nothing has started training.");
-document.getElementById("go").onclick = () => {
-  if (i === 0 && plan.names.size < 4) { error = "Pick at least 4 names. A one-stock bot just memorizes that chart."; paint(); return; }
-  if (i < 4) { i++; error = ""; paint(); return; }
-  sessionStorage.setItem("pr-plan", JSON.stringify({ ...plan, names: [...plan.names] }));
-  location.href = "arena.html?start=1";
-};
-</script>
+<script src="shared.js"></script>
+<script src="site.js"></script>
+<script src="plan.js"></script>
+<script src="api.js"></script>
+<script>PR.bootSite({ shell: true, active: "training" });</script>
+<script src="builder.js"></script>
 </body>
 </html>

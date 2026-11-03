@@ -8,28 +8,12 @@
 <link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
 </head>
 <body>
-<div class="app"><main class="page" id="main"></main></div>
-<script src="shared.js"></script><script src="site.js"></script>
-<script>
-PR.bootSite({ shell: true, active: "portfolio" });
-const empty = new URLSearchParams(location.search).has("empty");
-const D = PR.data;
-if (empty) {
-  document.getElementById("main").innerHTML = `<div class="page-head"><div><h1>Portfolio</h1><p>Paper book</p></div></div><section class="card state-card" style="display:flex"><h3>No positions</h3><p>The bot has not been released to the paper book. Training can finish without owning a share.</p><a class="btn btn-gold" href="report.html">Read the report card</a></section>`;
-} else {
-  const pnl = D.positions.reduce((a,p)=>a+p.pnl,0);
-  document.getElementById("main").innerHTML = `<div class="page-head"><div><h1>Portfolio</h1><p>Paper equity ${PR.usd(D.equity)} · open P&L <span class="${PR.cls(pnl)} num">${PR.sgn(pnl)}</span></p></div><a class="btn btn-sm" href="portfolio.html?empty=1">Preview empty</a></div>
-    <div class="grid-2"><section class="card"><div class="card-h"><h2>Positions</h2><span class="sub">Cap 15% each</span></div><div class="card-b tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th class="r">Qty</th><th class="r">Last</th><th class="r">P&L</th><th class="r">Weight</th><th></th></tr></thead><tbody>
-      ${D.positions.map((p)=>`<tr><td><b>${p.s}</b><br><span class="muted">${p.n}</span></td><td class="r num">${p.q}</td><td class="r num">${p.last.toFixed(2)}</td><td class="r num ${PR.cls(p.pnl)}">${PR.sgn(p.pnl)}</td><td class="r num">${(p.val/D.equity*100).toFixed(1)}%</td><td><a href="explainer.html?s=${p.s}">Why</a></td></tr>`).join("")}
-    </tbody></table></div></section>
-    <section class="card"><div class="card-h"><h2>Sector exposure</h2></div><div class="card-b" id="sec"></div></section></div>
-    <section class="card"><div class="card-h"><h2>Fills</h2></div><div class="card-b" id="fills"></div></section>`;
-  const secs = {};
-  D.positions.forEach((p)=>{ secs[p.sec]=(secs[p.sec]||0)+p.val; });
-  const max = Math.max(...Object.values(secs));
-  document.getElementById("sec").innerHTML = Object.entries(secs).map(([k,v])=>`<div style="display:grid;grid-template-columns:100px 1fr 52px;gap:8px;align-items:center;margin:6px 0"><span>${k}</span><div class="meter"><i style="width:${v/max*100}%;background:var(--gold)"></i></div><b class="num">${(v/D.equity*100).toFixed(0)}%</b></div>`).join("");
-  document.getElementById("fills").innerHTML = D.trades.map((t)=>`<a class="feed-item" href="explainer.html?id=${t.id}" style="display:grid;grid-template-columns:64px 1fr auto;gap:10px;padding:8px 0;border-top:1px solid var(--line);color:inherit"><span class="act ${t.a.toLowerCase()}">${t.a}</span><span><b>${t.s}</b> · ${t.why}<br><span class="muted num">${t.t} ET</span></span><span class="num ${t.pnl!=null?PR.cls(t.pnl):""}">${t.pnl!=null?PR.sgn(t.pnl):""}</span></a>`).join("");
-}
-</script>
+<div class="app"><main class="page" id="main" data-view="portfolio"></main></div>
+<script src="shared.js"></script>
+<script src="site.js"></script>
+<script src="plan.js"></script>
+<script src="api.js"></script>
+<script>PR.bootSite({ shell: true, active: "portfolio", agent: false });</script>
+<script src="views.js"></script>
 </body>
 </html>

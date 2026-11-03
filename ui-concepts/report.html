@@ -11,14 +11,20 @@
 <div class="app"><main class="page">
   <div class="page-head"><div><h1>Report card</h1><p>run_1842 · Quick Train · Balanced · deterministic headline</p></div>
     <a class="btn" href="arena.html?state=finished">Back to Arena</a></div>
+  <a class="status-strip" href="arena.html?state=finished"><span class="pill gold"><i></i>B+</span><span>Exam finished · deterministic headline</span><b>Replay</b></a>
   <section class="verdict"><div class="eyebrow">Plain verdict</div><h2>Good enough to paper-trade. Not good enough to go live.</h2>
-    <p style="margin:0">On data it never trained on, the bot returned <b>+2.1%</b> with Sharpe <b>0.81</b> and a <b>−3.4%</b> drawdown. The training window looked better (+4.2%). That gap is acceptable. Live routing stays locked.</p></div>
+    <p style="margin:0">On data it never trained on, the bot returned <b>+2.1%</b> and beat buy-and-hold. The training window looked better (+4.2%). Live routing stays locked.</p></section>
+  <section data-mode-only="simple" class="card"><div class="card-b"><ul>
+    <li>Best regime: trend, +2.4%.</li>
+    <li>Worst regime: high volatility, −0.4%.</li>
+    <li>It would have beaten buy-and-hold on this window. That is not a promise about the next one.</li>
+  </ul></div></section>
   <div class="grid-3">
     <div class="card"><div class="card-b"><div class="eyebrow">Exam return</div><div class="num" style="font-size:28px" class="up">+2.1%</div><div class="muted">Deterministic · 22 trades</div></div></div>
     <div class="card"><div class="card-b"><div class="eyebrow">Sharpe</div><div class="num" style="font-size:28px">0.81</div><div class="muted">Stochastic diagnostic 0.66 · 40 trades</div></div></div>
     <div class="card"><div class="card-b"><div class="eyebrow">Max drawdown</div><div class="num down" style="font-size:28px">−3.4%</div><div class="muted">Halt is set at −25%</div></div></div>
   </div>
-  <div class="grid-2">
+  <div class="grid-2" data-mode-only="pro">
     <section class="card"><div class="card-h"><h2>Train vs exam</h2><span class="sub">Overfit check</span></div>
       <div class="card-b"><div class="chart" id="gap"></div>
         <p>Train +4.2% · Exam +2.1% · Gap 2.1 points. The mark sits under the caution line at 3 points.</p>
@@ -33,11 +39,10 @@
       <p class="muted">Alpha +1.4% · beta 0.82 versus SPY. Shown only because the benchmark series has real variance.</p>
       <p class="pro-only muted">Costs: a 2× fee stress still leaves the exam positive (+0.6%). Win streak 4, loss streak 2.</p></div></section>
   </div>
-  <section class="card"><div class="card-h"><h2>Drawdown</h2></div><div class="card-b"><div class="chart" id="dd"></div></div></section>
+  <section class="card" data-mode-only="pro"><div class="card-h"><h2>Drawdown</h2><span class="sub">vs previous run, gap was 3.4 points</span></div><div class="card-b"><div class="chart" id="dd"></div><p class="muted">Previous Quick Train gap was 3.4 points. This run is 2.1. Deterministic Sharpe 0.81 vs stochastic 0.66.</p><button class="btn btn-sm" id="export">Export card JSON</button></div></section>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <a class="btn btn-gold" href="desk.html">Start paper trading</a>
-    <a class="btn" href="training.html">Retrain</a>
-    <button class="btn" data-soon="Fork">Fork from best checkpoint</button>
+    <a class="btn btn-gold" href="desk.html">Promote to paper</a>
+    <a class="btn" href="training.html?from=ckpt_8">Retrain with changes</a>
     <button class="btn" id="share">Share read-only card</button>
   </div>
 </main></div>
@@ -49,6 +54,8 @@ PR.lineChart(document.getElementById("gap"), { id: "gap", height: 200, series: [
 const dd = PR.series(n, 9, 0, -1.2, 0.05).map((v,i)=>Math.min(0, v - (i>20?2:0)));
 PR.lineChart(document.getElementById("dd"), { id: "dd", height: 180, series: [{ data: dd, color: "--down", w: 2 }], xlabels: ["Start","Mid","End"], fmt: (v)=>v.toFixed(1)+"%", tip: (i)=>`<div class="num">Drawdown ${dd[i].toFixed(2)}%</div>` });
 document.getElementById("share").onclick = () => { navigator.clipboard?.writeText(location.href).catch(()=>{}); PR.toast("Read-only link copied. It shows this card, not the account."); };
+const exp = document.getElementById("export");
+if (exp) exp.onclick = () => PR.download("report-run-1842.json", JSON.stringify({ grade: "B+", exam: 2.1, train: 4.2, gap: 2.1, sharpe: 0.81, stochastic: 0.66, maxdd: -3.4 }, null, 2), "application/json");
 </script>
 </body>
 </html>

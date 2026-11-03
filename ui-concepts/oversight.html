@@ -8,24 +8,12 @@
 <link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
 </head>
 <body>
-<div class="app"><main class="page">
-  <div class="page-head"><div><h1>Oversight</h1><p>Go-live stays closed until every row is true. Live routing is not built.</p></div><span class="pill warn"><i></i>2 of 5</span></div>
-  <section class="card"><div class="card-h"><h2>Checklist · Balanced · ckpt_8</h2></div><div class="card-b" id="gates" style="display:grid;gap:4px"></div></section>
-  <section class="card"><div class="card-h"><h2>Audit trail</h2><a class="btn btn-sm" href="audit.html">Open Audit</a></div>
-    <div class="card-b muted">Today 15:02 · Exam stored · Faisal A.<br>Today 14:11 · Entropy boost applied by the coach · system<br>Today 09:40 · Quick Train queued · Faisal A.</div></section>
-  <button class="btn" disabled title="Checklist incomplete">Request live access</button>
-  <p class="muted">The button stays disabled on purpose. Paper trading does not need it. <a href="desk.html">Return to the desk</a>.</p>
-</main></div>
-<script src="shared.js"></script><script src="site.js"></script>
-<script>
-PR.bootSite({ shell: true, active: "oversight" });
-document.getElementById("gates").innerHTML = PR.gate([
-  {ok:true, t:"At least 20 closed paper trades", d:"Exam logged 22 deterministic trades.", v:"22"},
-  {ok:true, t:"Exam Sharpe at least 0.5", d:"Deterministic Sharpe is the number that counts.", v:"0.81"},
-  {ok:false, t:"Max drawdown inside your halt", d:"−3.4% is inside −25%, but the paper book has not lived through a stress week yet.", v:"pending"},
-  {ok:false, t:"Train/exam gap under 3 points", d:"Gap is 2.1 points. Needs a second exam window to confirm.", v:"2.1"},
-  {ok:false, t:"10 paper-trading days", d:"Day 1 of 10. Clock starts when you press Start paper trading.", v:"1 / 10"}
-]);
-</script>
+<div class="app"><main class="page" id="main" data-view="oversight"></main></div>
+<script src="shared.js"></script>
+<script src="site.js"></script>
+<script src="plan.js"></script>
+<script src="api.js"></script>
+<script>PR.bootSite({ shell: true, active: "oversight", agent: false });</script>
+<script src="views.js"></script>
 </body>
 </html>

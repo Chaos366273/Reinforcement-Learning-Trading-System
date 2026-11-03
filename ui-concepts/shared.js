@@ -93,7 +93,7 @@
   const qs = new URLSearchParams(location.search);
   const startTheme = qs.get("theme") || store.get("pr-theme", "dark");
   if (startTheme === "light") root.dataset.theme = "light";
-  document.body.dataset.mode = qs.get("mode") || store.get("pr-mode", "beginner");
+  document.body.dataset.mode = ((qs.get("mode") || store.get("pr-mode", "simple")) === "pro" ? "pro" : "simple");
   document.body.dataset.state = qs.get("state") || "live";
   if (qs.has("still")) { const st = document.createElement("style"); st.textContent = "*,*::before,*::after{animation:none!important;transition:none!important}"; document.head.append(st); }
   if (qs.get("dock") === "open") document.body.classList.add("dock-open");
@@ -102,9 +102,45 @@
   PR.setTheme = (t) => { if (t === "light") root.dataset.theme = "light"; else delete root.dataset.theme; store.set("pr-theme", t); document.dispatchEvent(new CustomEvent("pr:theme")); syncThemeButtons(); };
   function syncThemeButtons() {
     const light = root.dataset.theme === "light";
-    $$("[data-theme-toggle]").forEach((b) => { b.innerHTML = PR.icon(light ? "moon" : "sun", 17); b.setAttribute("aria-label", light ? "Switch to dark theme" : "Switch to light theme"); b.title = b.getAttribute("aria-label"); });
+    $$("[data-theme-toggle]").forEach((b) => {
+      b.setAttribute("aria-label", light ? "Switch to dark theme" : "Switch to light theme");
+      b.title = b.getAttribute("aria-label");
+      if (b.classList.contains("icon-btn")) b.innerHTML = PR.icon(light ? "moon" : "sun", 17);
+      else b.innerHTML = `${PR.icon(light ? "moon" : "sun", 16)} ${light ? "Use dark theme" : "Use light theme"}`;
+    });
   }
-  PR.setMode = (m) => { document.body.dataset.mode = m; store.set("pr-mode", m); $$("[data-mode-set]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.modeSet === m)); document.dispatchEvent(new CustomEvent("pr:mode")); };
+  PR.normalizeMode = (m) => (m === "pro" ? "pro" : "simple");
+  PR.isPro = () => document.body.dataset.mode === "pro";
+  PR.modeLabel = () => (PR.isPro() ? "Pro" : "Simple");
+  PR.setMode = (m) => {
+    const next = PR.normalizeMode(m);
+    document.body.dataset.mode = next;
+    store.set("pr-mode", next);
+    $$("[data-mode-set]").forEach((b) => {
+      const want = b.dataset.modeSet === "pro" ? "pro" : "simple";
+      b.setAttribute("aria-pressed", want === next);
+    });
+    PR.stampMode();
+    document.dispatchEvent(new CustomEvent("pr:mode"));
+  };
+  PR.stampMode = () => {
+    $$(".page-head").forEach((h) => {
+      let c = h.querySelector(".mode-chip");
+      if (!c) {
+        c = document.createElement("span");
+        c.className = "pill mode-chip";
+        h.append(c);
+      }
+      c.textContent = "Mode: " + PR.modeLabel();
+    });
+  };
+  PR.download = (name, text, type = "text/plain") => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type }));
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
   PR.setState = (s) => { document.body.dataset.state = s; $$("[data-state-set]").forEach((b) => b.classList.toggle("on", b.dataset.stateSet === s)); document.dispatchEvent(new CustomEvent("pr:state")); };
 
   let toastT;
@@ -187,12 +223,19 @@
       } else if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#composer").requestSubmit(); }
     });
     const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    const replyHtml = (html) => { const t = $("#typing"); if (!t) return; t.removeAttribute("id"); t.innerHTML = `<div class="who">Clawbot</div>${html}`; msgs.scrollTop = msgs.scrollHeight; };
     $("#composer").addEventListener("submit", (e) => {
       e.preventDefault(); const v = input.value.trim(); if (!v) return;
       msgs.insertAdjacentHTML("beforeend", `<div class="msg me">${esc(v)}</div><div class="msg" id="typing"><span class="typing"><i></i><i></i><i></i></span></div>`);
       input.value = ""; update(); msgs.scrollTop = msgs.scrollHeight;
-      setTimeout(() => { const t = $("#typing"); if (t) { t.removeAttribute("id"); t.innerHTML = `<div class="who">Clawbot</div>` + (/^\/explain/.test(v) ? "Opening the decision breakdown — confidence cleared the 0.25 gate, driven mostly by volume (1.7× average) and rising MACD." : "On it. In the live product this reaches your agents and tools; this sample only shows the interaction.") ; msgs.scrollTop = msgs.scrollHeight; } }, 900);
+      const custom = PR.onChat ? PR.onChat(v) : null;
+      if (custom && typeof custom.then === "function") { custom.then((r) => replyHtml((r && r.html) || r || "")); return; }
+      if (custom && custom.html) { replyHtml(custom.html); return; }
+      if (typeof custom === "string") { replyHtml(custom); return; }
+      setTimeout(() => replyHtml(/^\/explain/.test(v) ? "Opening the decision breakdown — confidence cleared the 0.25 gate, driven mostly by volume (1.7× average) and rising MACD." : "On it. I can explain a fill, or on Build a bot I can propose a plan change for you to apply."), 700);
     });
+    PR.seedChat = (html) => { if (msgs) msgs.innerHTML = html; };
+    PR.pushChat = (html, who) => { msgs.insertAdjacentHTML("beforeend", `<div class="msg">${who ? `<div class="who">${who}</div>` : ""}${html}</div>`); msgs.scrollTop = msgs.scrollHeight; };
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("dock-open") && !menu.classList.contains("open")) open(false); if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") { e.preventDefault(); open(!document.body.classList.contains("dock-open")); } });
   }
 
@@ -233,6 +276,93 @@
     return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
   };
 
+  /* ---------- popovers and phone sheets ---------- */
+  let parked = null;
+  let trapFn = null;
+  function sheetRoot() {
+    let rootEl = $("#sheet-root");
+    if (!rootEl) {
+      document.body.insertAdjacentHTML("beforeend", `<div class="sheet-root" id="sheet-root"><div class="sheet-backdrop" data-sheet-close></div><div class="sheet" role="dialog" aria-modal="true" aria-label="Menu"><div class="sheet-handle" aria-hidden="true"></div><div class="sheet-body"></div></div></div>`);
+      rootEl = $("#sheet-root");
+    }
+    return rootEl;
+  }
+  function bindTrap(container) {
+    if (trapFn) document.removeEventListener("keydown", trapFn);
+    trapFn = (e) => {
+      if (e.key !== "Tab" || !document.body.classList.contains("sheet-open")) return;
+      const nodes = [...container.querySelectorAll('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter((n) => n.offsetParent !== null);
+      if (!nodes.length) return;
+      const first = nodes[0], last = nodes[nodes.length - 1];
+      if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
+      else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
+    };
+    document.addEventListener("keydown", trapFn);
+    const first = container.querySelector("button, a, input");
+    if (first) first.focus();
+  }
+  function restoreParked() {
+    if (!parked) return;
+    parked.panel.classList.remove("open", "in-sheet");
+    parked.panel.style.cssText = "";
+    if (parked.next && parked.next.parentNode === parked.parent) parked.parent.insertBefore(parked.panel, parked.next);
+    else parked.parent.append(parked.panel);
+    parked = null;
+  }
+  PR.closePops = () => {
+    $$(".pop.open").forEach((p) => { if (p !== parked?.panel) { p.classList.remove("open"); p.style.cssText = ""; } });
+    $$("[data-pop][aria-expanded='true']").forEach((b) => b.setAttribute("aria-expanded", "false"));
+    restoreParked();
+    const body = $("#sheet-root .sheet-body");
+    if (body) body.innerHTML = "";
+    document.body.classList.remove("sheet-open");
+    if (trapFn) { document.removeEventListener("keydown", trapFn); trapFn = null; }
+  };
+  function placePop(panel, btn) {
+    panel.classList.add("open");
+    panel.style.position = "fixed";
+    panel.style.right = "auto";
+    panel.style.margin = "0";
+    const w = Math.min(320, window.innerWidth - 16);
+    panel.style.width = w + "px";
+    const r = btn.getBoundingClientRect();
+    const h = panel.offsetHeight || 240;
+    let left = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8);
+    if (r.left < 80) left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8));
+    let top = r.bottom + 8;
+    if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 8);
+    panel.style.left = left + "px";
+    panel.style.top = top + "px";
+    panel.style.zIndex = "80";
+  }
+  PR.togglePop = (btn) => {
+    const panel = document.getElementById(btn.dataset.pop);
+    if (!panel) return;
+    const was = panel.classList.contains("open") || panel.classList.contains("in-sheet");
+    PR.closePops();
+    if (was) return;
+    btn.setAttribute("aria-expanded", "true");
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      const host = sheetRoot();
+      parked = { panel, parent: panel.parentElement, next: panel.nextSibling };
+      panel.classList.add("open", "in-sheet");
+      panel.style.cssText = "position:static;width:100%;box-shadow:none;display:block;animation:none";
+      host.querySelector(".sheet-body").append(panel);
+      document.body.classList.add("sheet-open");
+      bindTrap(host.querySelector(".sheet"));
+    } else placePop(panel, btn);
+  };
+  PR.openSheet = (html, label) => {
+    PR.closePops();
+    const host = sheetRoot();
+    const sheet = host.querySelector(".sheet");
+    if (label) sheet.setAttribute("aria-label", label);
+    host.querySelector(".sheet-body").innerHTML = html;
+    document.body.classList.add("sheet-open");
+    PR.hydrate(host);
+    bindTrap(sheet);
+  };
+
   /* ---------- boot ---------- */
   PR.mount = (opts = {}) => {
     const app = $(".app");
@@ -241,15 +371,22 @@
     PR.hydrate(); syncThemeButtons(); initDock();
     $$("[data-rail-toggle]").forEach((b) => b.addEventListener("click", () => { document.body.classList.toggle("rail-collapsed"); store.set("pr-rail", document.body.classList.contains("rail-collapsed") ? "collapsed" : ""); document.dispatchEvent(new Event("pr:theme")); }));
     $$("[data-theme-toggle]").forEach((b) => b.addEventListener("click", () => PR.setTheme(root.dataset.theme === "light" ? "dark" : "light")));
-    $$("[data-mode-set]").forEach((b) => { b.setAttribute("aria-pressed", b.dataset.modeSet === document.body.dataset.mode); b.addEventListener("click", () => PR.setMode(b.dataset.modeSet)); });
+    $$("[data-mode-set]").forEach((b) => {
+      const want = b.dataset.modeSet === "pro" ? "pro" : "simple";
+      b.setAttribute("aria-pressed", want === document.body.dataset.mode);
+      b.addEventListener("click", () => PR.setMode(b.dataset.modeSet));
+    });
     $$("[data-state-set]").forEach((b) => { b.classList.toggle("on", b.dataset.stateSet === document.body.dataset.state); b.addEventListener("click", () => PR.setState(b.dataset.stateSet)); });
     $$("[data-menu-btn]").forEach((b) => b.addEventListener("click", () => document.body.classList.toggle("nav-open")));
     document.addEventListener("click", (e) => {
       if (document.body.classList.contains("nav-open") && !e.target.closest(".rail") && !e.target.closest("[data-menu-btn]")) document.body.classList.remove("nav-open");
-      const soon = e.target.closest("[data-soon]"); if (soon) { e.preventDefault(); PR.toast(`${soon.dataset.soon} isn't part of these samples — Desk, Cockpit and Explainer are.`); }
-      const pb = e.target.closest("[data-pop]"); $$(".pop.open").forEach((p) => { if (!pb || p !== $("#" + pb.dataset.pop)) p.classList.remove("open"); }); if (pb) $("#" + pb.dataset.pop).classList.toggle("open");
+      if (e.target.closest("[data-sheet-close]")) { PR.closePops(); return; }
+      const soon = e.target.closest("[data-soon]"); if (soon) { e.preventDefault(); const msg = soon.dataset.soon; PR.toast(msg.includes(".") ? msg : msg + " is not available in this preview."); return; }
+      const pb = e.target.closest("[data-pop]");
+      if (pb) { e.preventDefault(); PR.togglePop(pb); return; }
+      if (!e.target.closest(".pop") && !e.target.closest(".sheet")) PR.closePops();
     });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") $$(".pop.open").forEach((p) => p.classList.remove("open")); if (e.key === "Escape") document.body.classList.remove("nav-open"); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") { PR.closePops(); document.body.classList.remove("nav-open"); } });
     $$("[data-search]").forEach((s) => s.addEventListener("click", () => PR.toast("Command palette: jump to a ticker, trade or report (⌘K).")));
     document.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); PR.toast("Command palette: jump to a ticker, trade or report (⌘K)."); } });
   };

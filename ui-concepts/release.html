@@ -8,24 +8,12 @@
 <link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
 </head>
 <body>
-<div class="app"><main class="page">
-  <div class="page-head"><div><h1>Release</h1><p>Promote a checkpoint from research to the paper desk. Live is a later gate.</p></div></div>
-  <div class="grid-2">
-    <section class="card"><div class="card-h"><h2>Candidate</h2></div><div class="card-b">
-      <p><b class="num">ckpt_8</b> · exam Sharpe 0.81 · return +2.1%</p>
-      <p class="muted">Replaces the policy the desk is using. Open positions and stops stay. Only the next decision changes.</p>
-      <button class="btn btn-gold" id="rel">Release to paper</button>
-      <p id="done" hidden class="pill up"><i></i>Released to paper. Desk is on ckpt_8.</p></div></section>
-    <section class="card"><div class="card-h"><h2>Not eligible</h2></div><div class="card-b">
-      <p><b class="num">ckpt_6</b> was saved before the entropy fix. Exam Sharpe 0.22. The release button stays off.</p>
-      <button class="btn" disabled>Release to paper</button>
-      <p class="muted"><a href="oversight.html">Live release</a> is a different gate and stays closed.</p></div></section>
-  </div>
-</main></div>
-<script src="shared.js"></script><script src="site.js"></script>
-<script>
-PR.bootSite({ shell: true, active: "release" });
-document.getElementById("rel").onclick=()=>{ document.getElementById("rel").hidden=true; document.getElementById("done").hidden=false; PR.toast("Paper desk now uses ckpt_8."); };
-</script>
+<div class="app"><main class="page" id="main" data-view="release"></main></div>
+<script src="shared.js"></script>
+<script src="site.js"></script>
+<script src="plan.js"></script>
+<script src="api.js"></script>
+<script>PR.bootSite({ shell: true, active: "release", agent: false });</script>
+<script src="views.js"></script>
 </body>
 </html>

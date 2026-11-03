@@ -8,43 +8,12 @@
 <link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
 </head>
 <body>
-<div class="app"><main class="page">
-  <div class="page-head"><div><h1>Markets</h1><p>What the book is doing, and what the bot would do next.</p></div>
-    <span class="pill up"><i></i>Bull · trend · vol 1.4%</span></div>
-  <div class="grid-2">
-    <section class="card"><div class="card-h"><h2>Universe today</h2></div><div class="card-b"><div id="uni" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px"></div></div></section>
-    <section class="card" id="drawer"><div class="card-h"><h2 id="sym">NVDA</h2><span class="pill gold"><i></i>Held</span></div>
-      <div class="card-b"><div class="chart" id="px"></div>
-        <p id="think"></p>
-        <div class="steps" id="pipe"></div>
-        <a class="btn btn-sm" id="why" href="explainer.html">Open the explainer</a></div></section>
-  </div>
-  <section class="card"><div class="card-h"><h2>Regime map</h2></div><div class="card-b grid-3">
-    <div><b>Trend</b><p class="muted">SPY up, breadth positive. BUY size allowed at 1.0×.</p></div>
-    <div><b>Volatility</b><p class="muted">1.4%, inside the normal band. No hold-penalty cut.</p></div>
-    <div><b>Mean revert</b><p class="muted">Not the active regime. Signal bonus stays at 1.0×.</p></div>
-  </div></section>
-</main></div>
-<script src="shared.js"></script><script src="site.js"></script>
-<script>
-PR.bootSite({ shell: true, active: "markets" });
-const q = new URLSearchParams(location.search); let cur = q.get("s") || "NVDA";
-const held = new Set(PR.data.positions.map((p)=>p.s));
-function tone(t){ const r=PR.rng(PR.hash(t))(); const d=(r-0.45)*4; return [d, d>=0?`color-mix(in srgb,var(--up) ${20+Math.min(50,Math.abs(d)*18)}%,var(--panel-2))`:`color-mix(in srgb,var(--down) ${20+Math.min(50,Math.abs(d)*18)}%,var(--panel-2))`]; }
-document.getElementById("uni").innerHTML = PR.data.tickers.map((t)=>{ const [d,bg]=tone(t); return `<button data-s="${t}" style="border-radius:10px;border:1px solid ${t===cur?"var(--gold)":"transparent"};background:${bg};padding:8px 0;font:600 11px var(--mono);cursor:pointer">${t}<br><span class="${PR.cls(d)}">${d>=0?"+":""}${d.toFixed(1)}</span></button>`; }).join("");
-function show(t){
-  cur=t; document.getElementById("sym").textContent=t;
-  const px=PR.series(60, PR.hash(t), 100, 100+tone(t)[0], 0.01);
-  const el=document.getElementById("px"); el.innerHTML="";
-  PR.lineChart(el,{id:"m"+t,height:180,series:[{data:px,color:"--hold",w:2}],xlabels:["Open","Mid","Now"],fmt:(v)=>v.toFixed(0),tip:(i)=>`<div class="num">${px[i].toFixed(2)}</div>`});
-  const conf=(PR.rng(PR.hash(t)+3)()*0.4);
-  const act = held.has(t) ? "HOLD" : conf>0.25?"BUY":"HOLD";
-  document.getElementById("think").textContent = act==="BUY" ? `${t} clears the high-confidence gate (${conf.toFixed(2)}). A paper buy is allowed inside the 15% cap.` : `${t} does not get an order. ${held.has(t)?"Already held; size and the trailing stop decide.":"Confidence "+conf.toFixed(2)+" is below the gate."}`;
-  const ok = conf>0.1;
-  document.getElementById("pipe").innerHTML = ["Signal","Confidence","Regime","Cooldown","Risk cap","Order"].map((n,i)=>`<span class="step-pip ${i<4&&ok?"done":""} ${i===5?"on":""}"><span class="n">${i+1}</span>${n}</span>`).join("");
-}
-document.getElementById("uni").onclick=(e)=>{const b=e.target.closest("[data-s]"); if(b) show(b.dataset.s);};
-show(cur);
-</script>
+<div class="app"><main class="page" id="main" data-view="markets"></main></div>
+<script src="shared.js"></script>
+<script src="site.js"></script>
+<script src="plan.js"></script>
+<script src="api.js"></script>
+<script>PR.bootSite({ shell: true, active: "markets", agent: false });</script>
+<script src="views.js"></script>
 </body>
 </html>

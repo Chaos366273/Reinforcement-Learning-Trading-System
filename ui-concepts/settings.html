@@ -20,30 +20,33 @@
       <a class="btn btn-sm" href="twofa.html">Review two-factor</a>
       <button class="btn btn-sm" id="sess">Sign out other sessions (1)</button>
       <a href="forgot.html">Change password</a></div></section>
-    <section class="card"><div class="card-h"><h2>Appearance</h2></div><div class="card-b" style="display:flex;gap:8px;align-items:center">
+    <section class="card"><div class="card-h"><h2>Appearance</h2></div><div class="card-b" style="display:grid;gap:8px;justify-items:start">
       <button class="btn" data-theme-toggle></button>
-      <div class="seg"><button data-mode-set="beginner">Simple</button><button data-mode-set="pro">Pro</button></div>
+      <div class="seg"><button data-mode-set="simple">Simple</button><button data-mode-set="pro">Pro</button></div>
+      <p class="muted">Simple is guided. Pro shows raw PPO metrics, hyperparameters, and exports. This choice applies to every page.</p>
     </div></section>
     <section class="card"><div class="card-h"><h2>Credits</h2></div><div class="card-b">
       <p class="num" style="font-size:28px;margin:0">48</p>
       <p class="muted">Quick Train is free. A Standard run costs 12. This prototype does not charge.</p>
       <button class="btn" data-soon="Billing">Add credits</button></div></section>
-    <section class="card"><div class="card-h"><h2>Notifications</h2></div><div class="card-b" style="display:grid;gap:8px">
+    <section class="card" id="notifications"><div class="card-h"><h2>Notifications</h2></div><div class="card-b" style="display:grid;gap:8px">
       <label><input type="checkbox" checked> Email when a Deep Train finishes</label>
       <label><input type="checkbox" checked> Email if a run fails</label>
       <label><input type="checkbox"> Email every paper fill</label></div></section>
     <section class="card"><div class="card-h"><h2>API</h2></div><div class="card-b">
       <p class="muted">A read token for your own report cards. Creating one does not enable trading.</p>
       <button class="btn" id="tok">Create read token</button>
-      <p id="token" class="num" hidden></p></div></section>
+      <p id="token" class="num" hidden></p>
+      <button class="btn" id="dump">Download my plan JSON</button></div></section>
   </div>
 </main></div>
-<script src="shared.js"></script><script src="site.js"></script>
+<script src="shared.js"></script><script src="site.js"></script><script src="plan.js"></script>
 <script>
 PR.bootSite({ shell: true, active: "settings" });
 document.getElementById("p").onsubmit=(e)=>{e.preventDefault(); PR.toast("Profile saved.");};
 document.getElementById("sess").onclick=()=>PR.toast("Closed 1 other session. This browser stays signed in.");
 document.getElementById("tok").onclick=()=>{ const t=document.getElementById("token"); t.hidden=false; t.textContent="pr_read_7f3a…c21"; PR.toast("Read token created. Copy it now. It is not a trading key."); };
+document.getElementById("dump").onclick=()=>{ if (window.Plan) PR.download("plan.json", JSON.stringify(Plan.current(), null, 2), "application/json"); else PR.toast("Open Build a bot once so a plan exists on this desk."); };
 </script>
 </body>
 </html>

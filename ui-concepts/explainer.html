@@ -19,9 +19,12 @@
     </div></section>
     <section class="card"><div class="card-h"><h2>Checks</h2><span class="pill up"><i></i>Passed</span></div><div class="card-b" id="checks"></div></section>
   </div>
-  <section class="card"><div class="card-h"><h2>How the 48% BUY probability was built</h2><span class="sub">Start 0.21</span></div>
-    <div class="card-b" id="shap"></div></section>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-gold" id="ask">Ask Clawbot</button><a class="btn" href="concept-c-explainer.html">Open the long explainer</a><a class="btn" href="desk.html">Back to Desk</a></div>
+  <section class="card" data-mode-only="pro"><div class="card-h"><h2>How the 48% BUY probability was built</h2><span class="sub">Start 0.21 · checkpoint ckpt_8</span></div>
+    <div class="card-b" id="shap"></div>
+    <div class="card-b"><h3 style="margin:0 0 8px">Stop ladder</h3><p class="muted">Trail $115.28 (8% off the high). Hard stop near 10%. No order is sent if the name would pass the 15% cap.</p>
+      <table class="tbl"><thead><tr><th>Feature</th><th class="r">Value</th><th class="r">SHAP</th></tr></thead><tbody id="feat"></tbody></table>
+      <a href="arena.html?state=finished">Open ckpt_8 in the Arena</a></div></section>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-gold" id="ask">Ask Clawbot</button><a class="btn" href="desk.html">Back to Desk</a></div>
   <p class="muted">Simulated paper trade. The explanation describes the model, not a future result.</p>
 </main></div>
 <script src="shared.js"></script><script src="site.js"></script>
@@ -29,7 +32,9 @@
 PR.bootSite({ shell: true, active: "desk" });
 const feats=[["Volume ratio",0.07],["MACD histogram",0.05],["SPY context",0.05],["RSI",0.04],["MACD cross",0.03],["5-min return",0.02],["Bollinger width",-0.01],["ATR",-0.02]];
 let acc=0.21;
-document.getElementById("shap").innerHTML = feats.map(([n,v])=>{acc+=v; return `<div style="display:grid;grid-template-columns:140px 1fr 48px;gap:8px;align-items:center;margin:4px 0"><span>${n}</span><div class="meter"><i style="width:${Math.abs(v)*400}%;margin-left:${v<0?"auto":"0"};background:${v<0?"var(--down)":"var(--up)"}"></i></div><b class="num ${PR.cls(v)}">${v>0?"+":""}${v.toFixed(2)}</b></div>`;}).join("")+`<p><b class="num gold">0.48</b> final BUY · HOLD 0.41 · SELL 0.11</p>`;
+const shapHtml = feats.map(([n,v])=>{acc+=v; return `<div style="display:grid;grid-template-columns:140px 1fr 48px;gap:8px;align-items:center;margin:4px 0"><span>${n}</span><div class="meter"><i style="width:${Math.abs(v)*400}%;margin-left:${v<0?"auto":"0"};background:${v<0?"var(--down)":"var(--up)"}"></i></div><b class="num ${PR.cls(v)}">${v>0?"+":""}${v.toFixed(2)}</b></div>`;}).join("")+`<p><b class="num gold">0.48</b> final BUY · HOLD 0.41 · SELL 0.11</p>`;
+const shap = document.getElementById("shap"); if (shap) shap.innerHTML = shapHtml;
+const feat = document.getElementById("feat"); if (feat) feat.innerHTML = feats.map(([n,v])=>`<tr><td>${n}</td><td class="r num">${v>0?"+":""}${v.toFixed(2)}</td><td class="r num ${PR.cls(v)}">${v>0?"+":""}${v.toFixed(2)}</td></tr>`).join("");
 document.getElementById("checks").innerHTML = PR.gate([
   {ok:true,t:"Confidence",d:"0.31 is above the 0.25 high gate.",v:"0.31"},
   {ok:true,t:"Regime",d:"Bull trend, normal volatility.",v:"calm"},

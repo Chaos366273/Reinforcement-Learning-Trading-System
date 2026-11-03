@@ -309,8 +309,12 @@ body.dock-open .content { padding-bottom: calc(var(--dock-h) + 24px); }
 
 .proto-note { font-size: 11.5px; color: var(--muted); border: 1px dashed var(--line-2); padding: 8px 12px; border-radius: 10px; }
 
-body[data-mode="beginner"] .pro-only { display: none !important; }
-body[data-mode="pro"] .beginner-only { display: none !important; }
+body[data-mode="beginner"] .pro-only,
+body[data-mode="simple"] .pro-only,
+body[data-mode="simple"] [data-mode-only="pro"],
+body[data-mode="beginner"] [data-mode-only="pro"] { display: none !important; }
+body[data-mode="pro"] .beginner-only,
+body[data-mode="pro"] [data-mode-only="simple"] { display: none !important; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1180px) {

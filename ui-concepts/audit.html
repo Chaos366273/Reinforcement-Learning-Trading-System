@@ -8,18 +8,12 @@
 <link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
 </head>
 <body>
-<div class="app"><main class="page">
-  <div class="page-head"><div><h1>Audit</h1><p>Who changed a bot, a limit, or a key.</p></div><input id="q" placeholder="Filter" aria-label="Filter audit" style="padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:inherit"></div>
-  <section class="card"><div class="card-b tbl-wrap"><table class="tbl"><thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Subject</th></tr></thead><tbody id="rows"></tbody></table></div></section>
-  <p class="muted" id="none" hidden>Nothing matches that filter. Clear it to see the full trail.</p>
-</main></div>
-<script src="shared.js"></script><script src="site.js"></script>
-<script>
-PR.bootSite({ shell: true, active: "audit" });
-const rows=[["02 Nov 15:02","Faisal A.","Stored exam","run_1842"],["02 Nov 14:11","Coach","Raised entropy 0.02 → 0.04","run_1842"],["02 Nov 09:40","Faisal A.","Queued Quick Train","Balanced"],["01 Nov 18:10","Faisal A.","Set max position 15%","Balanced"],["01 Nov 18:02","Faisal A.","Connected paper broker","Alpaca paper"]];
-function paint(f){ const list=rows.filter((r)=>r.join(" ").toLowerCase().includes(f)); document.getElementById("rows").innerHTML=list.map((r)=>`<tr>${r.map((c)=>`<td>${c}</td>`).join("")}</tr>`).join(""); document.getElementById("none").hidden=list.length>0; }
-document.getElementById("q").oninput=(e)=>paint(e.target.value.toLowerCase());
-paint("");
-</script>
+<div class="app"><main class="page" id="main" data-view="audit"></main></div>
+<script src="shared.js"></script>
+<script src="site.js"></script>
+<script src="plan.js"></script>
+<script src="api.js"></script>
+<script>PR.bootSite({ shell: true, active: "audit", agent: false });</script>
+<script src="views.js"></script>
 </body>
 </html>
