@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="app"><main class="page">
+  <div class="page-head"><div><h1>Studio</h1><p>Shape the reward, then see the sentence the bot will actually feel.</p></div><span class="pill hold">Pro desk</span></div>
+  <div class="grid-2">
+    <section class="card"><div class="card-h"><h2>Reward shape</h2></div><div class="card-b" style="display:grid;gap:14px">
+      <div class="slider"><label>Trading incentive · <b class="num" id="ti">0.40</b></label><input id="tiR" type="range" min="0" max="150" value="40"><div class="sent" id="tiS"></div></div>
+      <div class="slider"><label>Hold penalty · <b class="num" id="hp">0.10</b></label><input id="hpR" type="range" min="0" max="30" value="10"><div class="sent" id="hpS"></div></div>
+      <div class="slider"><label>Profit weight · <b class="num" id="pw">5.0</b></label><input id="pwR" type="range" min="1" max="10" value="5"><div class="sent" id="pwS"></div></div>
+      <p class="beginner-only muted">Switch to Pro to edit the raw coefficients. Simple mode only shows the sentence.</p>
+    </div></section>
+    <section class="card"><div class="card-h"><h2>Mini simulation</h2><span class="sub">One cached week, not a new train</span></div><div class="card-b"><div class="chart" id="mini"></div><p id="miniNote" class="muted"></p></div></section>
+  </div>
+  <section class="card"><div class="card-h"><h2>Experiments</h2></div><div class="card-b tbl-wrap"><table class="tbl"><thead><tr><th></th><th>Run</th><th>Style</th><th class="r">Exam Sharpe</th><th class="r">HOLD</th><th></th></tr></thead><tbody>
+    <tr><td><input type="checkbox" checked data-cmp="1842"></td><td class="num">run_1842</td><td>Balanced</td><td class="r num">0.81</td><td class="r num">38%</td><td><a href="report.html">Card</a></td></tr>
+    <tr><td><input type="checkbox" checked data-cmp="1830"></td><td class="num">run_1830</td><td>Cautious</td><td class="r num">0.54</td><td class="r num">61%</td><td><a href="report.html">Card</a></td></tr>
+    <tr><td><input type="checkbox" data-cmp="1822"></td><td class="num">run_1822</td><td>Aggressive</td><td class="r num">0.22</td><td class="r num">19%</td><td><span class="muted">Over-traded</span></td></tr>
+  </tbody></table>
+  <div id="diff" style="margin-top:12px"></div></div></section>
+</main></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+PR.bootSite({ shell: true, active: "studio" });
+function sync(){
+  const ti=document.getElementById("tiR").value/100, hp=document.getElementById("hpR").value/100, pw=+document.getElementById("pwR").value;
+  document.getElementById("ti").textContent=ti.toFixed(2);
+  document.getElementById("hp").textContent=hp.toFixed(2);
+  document.getElementById("pw").textContent=pw.toFixed(1);
+  document.getElementById("tiS").textContent = ti>1 ? "The bot is paid strongly just for trading. Expect more fills and more noise." : "A modest payment for acting. Profit still has to carry the decision.";
+  document.getElementById("hpS").textContent = hp>0.15 ? "Standing still is expensive. The bot will force trades." : "Standing still is a small cost. It can wait for a cleaner setup.";
+  document.getElementById("pwS").textContent = `A 1% gain is worth about ${(pw).toFixed(1)} reward points before caps.`;
+  const series=PR.series(36, Math.round(ti*100+hp*10), 100, 100+ti*4-hp*6, 0.02);
+  const el=document.getElementById("mini"); el.innerHTML="";
+  PR.lineChart(el,{id:"mn"+ti+hp,height:180,series:[{data:series,color:"--gold",w:2}],xlabels:["Mon","Wed","Fri"],fmt:(v)=>v.toFixed(0),tip:(i)=>`<div class="num">${series[i].toFixed(1)}</div>`});
+  document.getElementById("miniNote").textContent="Preview equity on a frozen week. It is not the exam.";
+}
+["tiR","hpR","pwR"].forEach((id)=>document.getElementById(id).addEventListener("input", sync));
+sync();
+function diff(){
+  const on=[...document.querySelectorAll("[data-cmp]:checked")].map((x)=>x.dataset.cmp);
+  document.getElementById("diff").innerHTML = on.length<2 ? `<span class="muted">Tick two runs to compare.</span>` : `<div class="grid-2"><div><b class="num">run_${on[0]}</b><p class="muted">More active. Higher exam Sharpe. HOLD 38%.</p></div><div><b class="num">run_${on[1]}</b><p class="muted">Quieter. Lower Sharpe. Fewer false starts.</p></div></div>`;
+}
+document.querySelector("tbody").addEventListener("change", diff); diff();
+</script>
+</body>
+</html>

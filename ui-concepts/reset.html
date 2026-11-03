@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choose a new password · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+document.getElementById("root").innerHTML = PR.authFrame({
+  title: "Choose a new password",
+  lead: "This link is for faisal@pathrise.dev and works once.",
+  body: `<form id="f">
+    <div class="field pw"><label for="a">New password</label><input id="a" type="password" required minlength="12"><button type="button" data-toggle-pw="a">Show</button></div>
+    <div class="field" id="bf"><label for="b">Confirm</label><input id="b" type="password" required><span class="err">The two passwords do not match.</span></div>
+    <button class="btn btn-gold" type="submit">Update password</button></form>`,
+  foot: `<a href="login.html">Back to log in</a>`
+});
+PR.bootSite({ dock: false });
+document.getElementById("f").onsubmit = (e) => {
+  e.preventDefault();
+  if (document.getElementById("a").value !== document.getElementById("b").value) { document.getElementById("bf").classList.add("bad"); return; }
+  PR.toast("Password updated."); setTimeout(() => location.href = "login.html", 600);
+};
+</script>
+</body>
+</html>

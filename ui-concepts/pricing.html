@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pricing · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="nav"></div>
+<main class="page">
+  <div class="page-head"><div><h1>Train free. Go deep with credits.</h1><p>Placeholder prices for the prototype. Quick Train is the demo. Deep Train is the full 30-name research run.</p></div></div>
+  <div class="grid-3">
+    <article class="card"><div class="card-b"><div class="eyebrow">Quick</div><h2>$0</h2><p class="muted">8 names, about 20,000 steps, aimed at a few minutes. Enough to watch a bot stop guessing.</p><ul class="muted"><li>1 saved bot</li><li>Replay and report card</li><li>Paper desk, delayed</li></ul><a class="btn" href="signup.html">Create a free desk</a></div></article>
+    <article class="card" style="border-color:var(--gold-line)"><div class="card-b"><div class="eyebrow">Standard</div><h2>12 credits</h2><p class="muted">Full universe, one GPU run, checkpoints you can fork. You can leave and come back.</p><ul class="muted"><li>30 names</li><li>Mentor warm start</li><li>Held-out exam</li></ul><a class="btn btn-gold" href="signup.html">Start standard</a></div></article>
+    <article class="card"><div class="card-b"><div class="eyebrow">Deep</div><h2>40 credits</h2><p class="muted">Longer training, regime slices, and a shareable report card. Still paper only.</p><ul class="muted"><li>Priority queue</li><li>Stress tests</li><li>Compare up to 4 runs</li></ul><a class="btn" href="signup.html">Talk to the desk</a></div></article>
+  </div>
+  <p class="muted">Credits are a stand-in for GPU time. This page does not bill anyone.</p>
+</main>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>document.getElementById("nav").outerHTML = PR.publicNav(); PR.bootSite({ dock: false });</script>
+</body>
+</html>

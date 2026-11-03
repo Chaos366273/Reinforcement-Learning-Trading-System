@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set up your desk · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="nav"></div>
+<main class="page" style="max-width:880px">
+  <div style="display:flex;justify-content:space-between;align-items:center"><div class="steps" id="pips"></div><a href="desk.html?empty=1">Skip for now</a></div>
+  <section class="card"><div class="card-b" id="body"></div></section>
+  <div style="display:flex;gap:10px"><button class="btn" id="back">Back</button><button class="btn btn-gold" id="go">Continue</button></div>
+</main>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+document.getElementById("nav").outerHTML = PR.publicNav();
+PR.bootSite({ dock: false });
+const steps = ["Experience", "Goal", "Template", "First run"];
+let i = 0;
+const pick = { level: "new", goal: "learn", bot: "balanced" };
+function choice(group, id, title, text, on) {
+  return `<button class="choice" data-g="${group}" data-id="${id}" aria-pressed="${on}"><b>${title}</b><span>${text}</span></button>`;
+}
+function paint() {
+  document.getElementById("pips").innerHTML = steps.map((s, k) => `<span class="step-pip ${k < i ? "done" : ""} ${k === i ? "on" : ""}"><span class="n">${k + 1}</span>${s}</span>`).join("");
+  const bodies = [
+    `<h2>How close are you to this?</h2><div class="grid-3">${choice("level","new","New to markets","I want plain English.", pick.level==="new")}${choice("level","semi","I already trade","Show me the numbers.", pick.level==="semi")}${choice("level","quant","I know RL","Open Pro by default.", pick.level==="quant")}</div>`,
+    `<h2>What should the first bot optimise for?</h2><div class="grid-3">${choice("goal","learn","Learn the desk","A short Quick Train I can watch.", pick.goal==="learn")}${choice("goal","steady","Stay calm","Fewer trades, tighter stops.", pick.goal==="steady")}${choice("goal","active","Stay active","Accept more trades and more drawdown.", pick.goal==="active")}</div>`,
+    `<h2>Pick a starter. You can edit every setting next.</h2><div class="grid-3">${choice("bot","cautious","Cautious","Max 8% per name. Wider stops. Lower hold penalty.", pick.bot==="cautious")}${choice("bot","balanced","Balanced","Max 15% per name. Default research profile.", pick.bot==="balanced")}${choice("bot","aggressive","Aggressive","Max 15% still, but a stronger trading incentive.", pick.bot==="aggressive")}</div>`,
+    `<h2>Your first session</h2><p>Template <b>${pick.bot}</b>, goal <b>${pick.goal}</b>. Quick Train uses 8 names and about 20,000 steps. You can watch it, or open the demo bot first.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-gold" href="training.html?template=${pick.bot}">Build this bot</a><a class="btn" href="arena.html?demo=1">Watch the demo learn</a></div>`
+  ];
+  document.getElementById("body").innerHTML = bodies[i];
+  document.getElementById("body").onclick = (e) => {
+    const b = e.target.closest(".choice"); if (!b) return;
+    pick[b.dataset.g] = b.dataset.id;
+    if (b.dataset.id === "quant" || b.dataset.id === "semi") PR.setMode("pro"); else PR.setMode("beginner");
+    paint();
+  };
+  document.getElementById("go").textContent = i === 3 ? "Go to desk" : "Continue";
+}
+paint();
+document.getElementById("back").onclick = () => { if (i === 0) location.href = "verify.html"; else { i--; paint(); } };
+document.getElementById("go").onclick = () => { if (i < 3) { i++; paint(); } else location.href = "desk.html"; };
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report card · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="app"><main class="page">
+  <div class="page-head"><div><h1>Report card</h1><p>run_1842 · Quick Train · Balanced · deterministic headline</p></div>
+    <a class="btn" href="arena.html?state=finished">Back to Arena</a></div>
+  <section class="verdict"><div class="eyebrow">Plain verdict</div><h2>Good enough to paper-trade. Not good enough to go live.</h2>
+    <p style="margin:0">On data it never trained on, the bot returned <b>+2.1%</b> with Sharpe <b>0.81</b> and a <b>−3.4%</b> drawdown. The training window looked better (+4.2%). That gap is acceptable. Live routing stays locked.</p></div>
+  <div class="grid-3">
+    <div class="card"><div class="card-b"><div class="eyebrow">Exam return</div><div class="num" style="font-size:28px" class="up">+2.1%</div><div class="muted">Deterministic · 22 trades</div></div></div>
+    <div class="card"><div class="card-b"><div class="eyebrow">Sharpe</div><div class="num" style="font-size:28px">0.81</div><div class="muted">Stochastic diagnostic 0.66 · 40 trades</div></div></div>
+    <div class="card"><div class="card-b"><div class="eyebrow">Max drawdown</div><div class="num down" style="font-size:28px">−3.4%</div><div class="muted">Halt is set at −25%</div></div></div>
+  </div>
+  <div class="grid-2">
+    <section class="card"><div class="card-h"><h2>Train vs exam</h2><span class="sub">Overfit check</span></div>
+      <div class="card-b"><div class="chart" id="gap"></div>
+        <p>Train +4.2% · Exam +2.1% · Gap 2.1 points. The mark sits under the caution line at 3 points.</p>
+        <div class="gapbar" aria-label="Gap of 2.1 points, caution at 3"><i style="left:42%"></i></div></div></section>
+    <section class="card"><div class="card-h"><h2>By regime</h2></div>
+      <div class="card-b"><table class="tbl"><thead><tr><th>Regime</th><th class="r">Exam return</th></tr></thead><tbody>
+        <tr><td>Trend</td><td class="r num up">+2.4%</td></tr>
+        <tr><td>Low volatility</td><td class="r num up">+1.1%</td></tr>
+        <tr><td>Mean revert</td><td class="r num up">+0.3%</td></tr>
+        <tr><td>High volatility</td><td class="r num down">−0.4%</td></tr>
+      </tbody></table>
+      <p class="muted">Alpha +1.4% · beta 0.82 versus SPY. Shown only because the benchmark series has real variance.</p>
+      <p class="pro-only muted">Costs: a 2× fee stress still leaves the exam positive (+0.6%). Win streak 4, loss streak 2.</p></div></section>
+  </div>
+  <section class="card"><div class="card-h"><h2>Drawdown</h2></div><div class="card-b"><div class="chart" id="dd"></div></div></section>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn btn-gold" href="desk.html">Start paper trading</a>
+    <a class="btn" href="training.html">Retrain</a>
+    <button class="btn" data-soon="Fork">Fork from best checkpoint</button>
+    <button class="btn" id="share">Share read-only card</button>
+  </div>
+</main></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+PR.bootSite({ shell: true, active: "training" });
+const n = 40, tr = PR.series(n, 2, 0, 4.2, 0.04), ex = PR.series(n, 5, 0, 2.1, 0.03);
+PR.lineChart(document.getElementById("gap"), { id: "gap", height: 200, series: [{ data: tr, color: "--gold", w: 2 }, { data: ex, color: "--hold", w: 2 }], xlabels: ["Start","Mid","End"], fmt: (v)=>v.toFixed(1)+"%", tip: (i)=>`<div class="num">Train ${tr[i].toFixed(2)}%</div><div class="num">Exam ${ex[i].toFixed(2)}%</div>` });
+const dd = PR.series(n, 9, 0, -1.2, 0.05).map((v,i)=>Math.min(0, v - (i>20?2:0)));
+PR.lineChart(document.getElementById("dd"), { id: "dd", height: 180, series: [{ data: dd, color: "--down", w: 2 }], xlabels: ["Start","Mid","End"], fmt: (v)=>v.toFixed(1)+"%", tip: (i)=>`<div class="num">Drawdown ${dd[i].toFixed(2)}%</div>` });
+document.getElementById("share").onclick = () => { navigator.clipboard?.writeText(location.href).catch(()=>{}); PR.toast("Read-only link copied. It shows this card, not the account."); };
+</script>
+</body>
+</html>

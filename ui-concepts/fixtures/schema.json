@@ -1,0 +1,31 @@
+{
+  "name": "pathrise.training.event.v1",
+  "description": "One JSON object per line. Same events for a live worker and a replay.",
+  "events": [
+    "run.started",
+    "stage.changed",
+    "rollout.metrics",
+    "eval.result",
+    "coach.event",
+    "checkpoint.saved",
+    "run.finished",
+    "run.failed"
+  ],
+  "rollout.metrics": [
+    "step",
+    "ep_rew_mean",
+    "ep_len",
+    "entropy",
+    "value_loss",
+    "approx_kl",
+    "lr",
+    "ent_coef",
+    "fps",
+    "ret",
+    "sharpe",
+    "win",
+    "buy",
+    "hold",
+    "sell"
+  ]
+}

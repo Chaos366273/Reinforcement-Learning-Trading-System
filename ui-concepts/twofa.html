@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two-factor · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+document.getElementById("root").innerHTML = PR.authFrame({
+  title: "Confirm it is you",
+  lead: "Enter the 6-digit code from your authenticator. This prototype accepts 482913.",
+  body: `<form id="f"><div class="field" id="cf"><label for="code">Authenticator code</label><input id="code" class="num" inputmode="numeric" maxlength="6" required><span class="err">That code is wrong or expired.</span></div>
+    <button class="btn btn-gold" type="submit">Continue</button></form>
+    <button class="btn" id="backup">Use a backup code</button>
+    <div id="bak" hidden class="field"><label for="bcode">Backup code</label><input id="bcode" placeholder="XXXX-XXXX"></div>`,
+  foot: `<a href="login.html">Back to log in</a>`
+});
+PR.bootSite({ dock: false });
+document.getElementById("backup").onclick = () => { document.getElementById("bak").hidden = false; };
+document.getElementById("f").onsubmit = (e) => {
+  e.preventDefault();
+  const c = document.getElementById("code").value;
+  if (c !== "482913") { document.getElementById("cf").classList.add("bad"); return; }
+  location.href = "desk.html";
+};
+</script>
+</body>
+</html>

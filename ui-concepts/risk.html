@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Risk · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="app"><main class="page">
+  <div class="page-head"><div><h1>Risk</h1><p>Limits are set before training. The paper book cannot cross them quietly.</p></div><span class="pill up"><i></i>Inside limits</span></div>
+  <div class="grid-3">
+    <div class="card"><div class="card-b"><div class="eyebrow">Gross exposure</div><b class="num" style="font-size:26px">41%</b><div class="meter"><i style="width:41%;background:var(--gold)"></i></div><span class="muted">Limit 100%</span></div></div>
+    <div class="card"><div class="card-b"><div class="eyebrow">Largest name</div><b class="num" style="font-size:26px">7.2%</b><div class="meter"><i style="width:48%;background:var(--up)"></i></div><span class="muted">Cap 15% · NVDA</span></div></div>
+    <div class="card"><div class="card-b"><div class="eyebrow">Drawdown</div><b class="num down" style="font-size:26px">−1.8%</b><div class="meter"><i style="width:7%;background:var(--down)"></i></div><span class="muted">Halt at −25%</span></div></div>
+  </div>
+  <div class="grid-2">
+    <section class="card"><div class="card-h"><h2>Stop ladder</h2></div><div class="card-b tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th class="r">Last</th><th class="r">Trail</th><th class="r">Hard</th></tr></thead><tbody id="stops"></tbody></table>
+      <p class="muted">Trail is 8% off the high. Hard stop is about 10% under entry. Both are paper orders.</p></div></section>
+    <section class="card"><div class="card-h"><h2>Drawdown history</h2></div><div class="card-b"><div class="chart" id="dd"></div></div></section>
+  </div>
+  <section class="card"><div class="card-h"><h2>Stress</h2></div><div class="card-b grid-3">
+    <div><b>Fees ×2</b><p class="muted">Exam return stays positive at +0.6%.</p></div>
+    <div><b>Gap open −3%</b><p class="muted">Stops fill. Book −4.1%, still above the halt.</p></div>
+    <div><b>High-vol week</b><p class="muted">The regime slice lost 0.4%. Size would have been cut.</p></div>
+  </div></section>
+</main></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+PR.bootSite({ shell: true, active: "risk" });
+document.getElementById("stops").innerHTML = PR.data.positions.map((p)=>`<tr><td>${p.s}</td><td class="r num">${p.last.toFixed(2)}</td><td class="r num">${p.stop.toFixed(2)}</td><td class="r num">${(p.avg*0.9).toFixed(2)}</td></tr>`).join("");
+const dd = PR.series(50, 4, 0, -1.8, 0.08).map((v)=>Math.min(0,v));
+PR.lineChart(document.getElementById("dd"), { id:"rdd", height:200, series:[{data:dd,color:"--down",w:2}], xlabels:["Apr","Jul","Oct"], fmt:(v)=>v.toFixed(1)+"%", tip:(i)=>`<div class="num">${dd[i].toFixed(2)}%</div>` });
+</script>
+</body>
+</html>

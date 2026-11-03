@@ -1,85 +1,64 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PathRise — UI design samples</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PathRise — Don't trade. Train.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared.css">
-<style>
-  .wrap { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 36px 28px 80px; }
-  header.top { display: flex; align-items: center; gap: 14px; margin-bottom: 44px; }
-  .hero h1 { font-size: clamp(30px, 5vw, 52px); letter-spacing: -0.04em; line-height: 1.05; margin: 14px 0 14px; max-width: 800px; }
-  .hero h1 em { font-style: normal; background: linear-gradient(90deg, var(--gold-2), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .hero p { color: var(--text-2); font-size: 16px; max-width: 680px; margin: 0; }
-  .swatches { display: flex; gap: 10px; margin-top: 26px; flex-wrap: wrap; align-items: center; }
-  .sw { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); font-size: 12px; color: var(--text-2); }
-  .sw i { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-2); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 22px; margin-top: 48px; }
-  .sample { display: flex; flex-direction: column; overflow: hidden; transition: transform 0.25s var(--ease), border-color 0.2s, box-shadow 0.25s; color: inherit; }
-  .sample:hover { transform: translateY(-4px); border-color: var(--gold-line); box-shadow: var(--glow); }
-  .sample:active { transform: translateY(-1px); }
-  .thumb { position: relative; height: 230px; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--bg-2); }
-  .thumb iframe { position: absolute; left: 0; top: 0; width: 1440px; height: 920px; border: 0; transform-origin: 0 0; pointer-events: none; }
-  .info { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-  .info h2 { margin: 0; font-size: 18px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
-  .info p { margin: 0; color: var(--muted); }
-  .info ul { margin: 6px 0 0; padding-left: 18px; color: var(--text-2); font-size: 13px; display: grid; gap: 3px; }
-  .info .go { margin-top: auto; padding-top: 12px; color: var(--gold-2); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
-  section.notes { margin-top: 56px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-  .note { padding: 18px; } .note h3 { margin: 10px 0 6px; font-size: 15px; } .note p { margin: 0; color: var(--muted); font-size: 13.5px; }
-  .note .state-ico { width: 38px; height: 38px; border-radius: 11px; }
-</style>
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <span class="logo" data-i="bolt"></span><span class="brand-name">PathRise<small>Design samples</small></span><span class="top-spacer"></span>
-    <div class="seg" role="group" aria-label="Detail level"><button data-mode-set="beginner">Simple</button><button data-mode-set="pro">Pro</button></div>
-    <button class="icon-btn" data-theme-toggle></button>
-  </header>
-
-  <div class="hero">
-    <span class="pill gold"><i></i>Three directions · dummy data</span>
-    <h1>Make people <em>watch an AI trader think</em>, then trust it.</h1>
-    <p>Your reinforcement-learning agent already produces regimes, gating decisions and SHAP explanations. These samples put that reasoning on screen — calm dark by default, gold for the AI, green and red only for money. Toggle <b>Simple / Pro</b> and light / dark on any page.</p>
-    <div class="swatches" aria-label="Palette">
-      <span class="sw"><i style="background:var(--bg)"></i>Calm dark</span><span class="sw"><i style="background:var(--gold)"></i>Gold · brand and AI</span><span class="sw"><i style="background:var(--up)"></i>Profit / BUY</span><span class="sw"><i style="background:var(--down)"></i>Loss / SELL</span><span class="sw"><i style="background:var(--hold)"></i>HOLD / neutral</span><span class="sw"><i style="background:var(--warn)"></i>Warning</span>
+<div class="pub" id="nav"></div>
+<main class="pub">
+  <section class="hero">
+    <div>
+      <span class="pill gold"><i></i>Paper money · simulated</span>
+      <h1>Don't trade.<br><em>Train.</em></h1>
+      <p style="color:var(--text-2);font-size:17px;max-width:520px">Most platforms hand you an order ticket. PathRise hands you a reinforcement-learning desk. You teach a bot, watch it learn, then let it paper-trade with the same checks a quant desk uses.</p>
+      <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+        <a class="btn btn-gold" href="signup.html">Train a bot</a>
+        <a class="btn" href="arena.html?demo=1">Watch a bot learn</a>
+        <a class="btn btn-ghost" href="login.html">Log in</a>
+      </div>
+      <p class="muted" style="font-size:12.5px;margin-top:14px">Nothing here is financial advice. Every number on the public site is from a labelled simulation.</p>
     </div>
-  </div>
-
-  <div class="grid">
-    <a class="card sample" href="concept-a-desk.html">
-      <div class="thumb" data-thumb><iframe src="concept-a-desk.html?mode=pro" title="Concept A preview" loading="lazy" tabindex="-1"></iframe></div>
-      <div class="info"><h2>A · Desk <span class="pill up">Closest to today</span></h2><p>Your current shell, refined: collapsible rail, KPI strip, agent-vs-SPY chart, an "Agent brain" panel and a live decision feed.</p>
-        <ul><li>Paper book becomes a popover — reachable from every page</li><li>Loading, empty and error states built in</li><li>Clawbot dock with / tools and @ agents</li></ul><span class="go">Open sample <span data-i="next" data-s="16"></span></span></div>
-    </a>
-    <a class="card sample" href="concept-b-cockpit.html">
-      <div class="thumb" data-thumb><iframe src="concept-b-cockpit.html?mode=pro" title="Concept B preview" loading="lazy" tabindex="-1"></iframe></div>
-      <div class="info"><h2>B · Cockpit <span class="pill gold">The "wow" one</span></h2><p>Top-nav layout that makes the agent the hero: a decision ring, a six-step gating pipeline and a clickable 30-stock universe heat-map.</p>
-        <ul><li>Click any stock — the ring and gates update</li><li>Shows <i>why</i> the agent is holding, not just that it is</li><li>Best for demos and first impressions</li></ul><span class="go">Open sample <span data-i="next" data-s="16"></span></span></div>
-    </a>
-    <a class="card sample" href="concept-c-explainer.html">
-      <div class="thumb" data-thumb><iframe src="concept-c-explainer.html?mode=pro" title="Concept C preview" loading="lazy" tabindex="-1"></iframe></div>
-      <div class="info"><h2>C · Decision Explainer <span class="pill hold">Trust builder</span></h2><p>One trade, fully explained: three plain-English reasons, a SHAP waterfall, safety checks, stop-loss guard-rails and a counterfactual.</p>
-        <ul><li>Simple mode hides raw values; Pro shows everything</li><li>Older / Newer, breadcrumb and Back — never a dead end</li><li>"Ask Clawbot" pre-fills the chat</li></ul><span class="go">Open sample <span data-i="next" data-s="16"></span></span></div>
-    </a>
-  </div>
-
-  <section class="notes" aria-label="Design principles">
-    <div class="card note"><div class="state-ico"><span data-i="spark" data-s="19"></span></div><h3>Gold means "the AI"</h3><p>One accent, one meaning. Green/red are reserved for P&amp;L and BUY/SELL; HOLD is a calm blue-grey so it never reads as a warning.</p></div>
-    <div class="card note"><div class="state-ico"><span data-i="oversight" data-s="19"></span></div><h3>Two depths, one product</h3><p>Retail users get plain English and fewer numbers. Semi-pros flip to Pro for probabilities, SHAP values, entropy and stop levels.</p></div>
-    <div class="card note"><div class="state-ico"><span data-i="alert" data-s="19"></span></div><h3>Honest edge cases</h3><p>If the agent is collapsing to HOLD or the stream drops, the UI says so and explains what is safe — instead of an empty chart.</p></div>
+    <div class="card">
+      <div class="card-h"><h2>Quick Train replay</h2><span class="pill up live"><i></i>Recorded</span></div>
+      <div class="card-b"><div class="chart" id="hero-chart"></div>
+        <div class="grid-3" style="margin-top:12px;gap:8px">
+          <div class="fact" style="padding:10px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line)"><small class="muted">Reward</small><b class="num" style="display:block">−0.8 → +1.4</b></div>
+          <div class="fact" style="padding:10px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line)"><small class="muted">HOLD share</small><b class="num" style="display:block">71% → 38%</b></div>
+          <div class="fact" style="padding:10px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line)"><small class="muted">vs SPY</small><b class="num up" style="display:block">+2.1%</b></div>
+        </div>
+      </div>
+    </div>
   </section>
-</div>
-<script src="shared.js"></script>
+  <section class="page" style="padding-top:10px">
+    <div class="grid-3">
+      <article class="card"><div class="card-b"><div class="eyebrow">01 · Teach</div><h2 style="margin:6px 0">Pick a universe and a style</h2><p class="muted">Cautious, Balanced or Aggressive. Each maps to the real reward and risk settings in the training config. A mentor can warm-start the policy.</p></article>
+      <article class="card"><div class="card-b"><div class="eyebrow">02 · Test</div><h2 style="margin:6px 0">Exam on data it never trained on</h2><p class="muted">The report card leads with deterministic results and shows the gap between training and a held-out window, so a lucky backtest cannot sneak through.</p></article>
+      <article class="card"><div class="card-b"><div class="eyebrow">03 · Trade</div><h2 style="margin:6px 0">Paper first. Live stays locked.</h2><p class="muted">The bot paper-trades with stops, size caps and a written go-live checklist. Real-money routing is not available in this build.</p></article>
+    </div>
+    <div class="grid-3">
+      <article class="card"><div class="card-b"><h3 style="margin:0 0 6px">Validation discipline</h3><p class="muted">Train curve and exam curve stay on screen together. Overfit is a status, not a surprise.</p></article>
+      <article class="card"><div class="card-b"><h3 style="margin:0 0 6px">Risk guardrails</h3><p class="muted">Default max position 15% of the book, trailing stop, and a 25% drawdown halt. You set them before the first step.</p></article>
+      <article class="card"><div class="card-b"><h3 style="margin:0 0 6px">Explainable decisions</h3><p class="muted">Every paper trade opens into plain English plus the feature contributions that moved the policy.</p></article>
+    </div>
+    <section class="card"><div class="card-b faq">
+      <h2 style="margin-top:0">Questions</h2>
+      <details open><summary>Is this live trading?</summary><p>No. Training and the desk use simulated paper money. Live routing stays locked behind the Oversight checklist and is marked coming later.</p></details>
+      <details><summary>How fast does a bot learn on screen?</summary><p>A full research run updates every rollout, not every tick. Quick Train is the live demo: a small universe aimed at a few minutes, replayed here from a recorded run.</p></details>
+      <details><summary>Do I need to know reinforcement learning?</summary><p>Simple mode speaks in sentences. Pro mode shows learning rate, entropy, clip range and SHAP values.</p></details>
+    </div></section>
+    <footer class="muted" style="font-size:12px">PathRise · simulated research desk · <a href="gallery.html">earlier visual samples</a></footer>
+  </section>
+</main>
+<script src="shared.js"></script><script src="site.js"></script>
 <script>
-  PR.mount({ rail: false, dock: false });
-  const fit = () => PR.$$("[data-thumb]").forEach((t) => { const f = t.querySelector("iframe"); f.style.transform = `scale(${t.clientWidth / 1440})`; });
-  fit(); addEventListener("resize", fit);
-  const sync = () => PR.$$("[data-thumb] iframe").forEach((f) => { try { f.contentWindow.PR && f.contentWindow.PR.setTheme(document.documentElement.dataset.theme === "light" ? "light" : "dark"); } catch {} });
-  document.addEventListener("pr:theme", sync);
+  document.getElementById("nav").outerHTML = PR.publicNav("home");
+  PR.bootSite({ dock: false });
+  const n = 64, a = PR.series(n, 4, 100, 106.2, 0.01), s = PR.series(n, 8, 100, 102.4, 0.008);
+  PR.lineChart(document.getElementById("hero-chart"), { id: "hero", height: 220, series: [{ data: a, color: "--gold", w: 2.2 }, { data: s, color: "--hold", w: 1.5, dash: true }], xlabels: ["Gen 0", "Gen 4", "Gen 8"], fmt: (v) => v.toFixed(0), tip: (i) => `<div class="num"><span class="gold">Bot</span> ${a[i].toFixed(1)}</div><div class="num"><span class="hold">SPY</span> ${s[i].toFixed(1)}</div>` });
 </script>
 </body>
 </html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify email · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+let left = 0;
+function paint() {
+  document.getElementById("root").innerHTML = PR.authFrame({
+    title: "Check your email",
+    lead: "We sent a 6-digit code to faisal@pathrise.dev. It expires in 15 minutes.",
+    body: `<form id="f"><div class="field"><label for="code">Code</label><input id="code" class="num" inputmode="numeric" maxlength="6" placeholder="000000" required></div>
+      <button class="btn btn-gold" type="submit">Verify</button></form>
+      <button class="btn" id="resend" ${left ? "disabled" : ""}>${left ? "Resend in " + left + "s" : "Resend code"}</button>
+      <a href="signup.html">Use a different email</a>`,
+    foot: `<a href="login.html">Back to log in</a>`
+  });
+  PR.bootSite({ dock: false });
+  document.getElementById("f").onsubmit = (e) => { e.preventDefault(); const c = document.getElementById("code").value; if (c === "000000" || c.length < 6) return PR.toast("That code is not valid. Try 482913 for this prototype."); location.href = "onboarding.html"; };
+  document.getElementById("resend").onclick = () => { left = 30; PR.toast("Code sent again."); paint(); const t = setInterval(() => { left--; if (left <= 0) clearInterval(t); paint(); }, 1000); };
+}
+paint();
+</script>
+</body>
+</html>

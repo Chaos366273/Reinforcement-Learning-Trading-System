@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PathRise — earlier samples</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .wrap { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 36px 28px 80px; }
+  header.top { display: flex; align-items: center; gap: 14px; margin-bottom: 44px; }
+  .hero h1 { font-size: clamp(30px, 5vw, 52px); letter-spacing: -0.04em; line-height: 1.05; margin: 14px 0 14px; max-width: 800px; }
+  .hero h1 em { font-style: normal; background: linear-gradient(90deg, var(--gold-2), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { color: var(--text-2); font-size: 16px; max-width: 680px; margin: 0; }
+  .swatches { display: flex; gap: 10px; margin-top: 26px; flex-wrap: wrap; align-items: center; }
+  .sw { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); font-size: 12px; color: var(--text-2); }
+  .sw i { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-2); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 22px; margin-top: 48px; }
+  .sample { display: flex; flex-direction: column; overflow: hidden; transition: transform 0.25s var(--ease), border-color 0.2s, box-shadow 0.25s; color: inherit; }
+  .sample:hover { transform: translateY(-4px); border-color: var(--gold-line); box-shadow: var(--glow); }
+  .sample:active { transform: translateY(-1px); }
+  .thumb { position: relative; height: 230px; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--bg-2); }
+  .thumb iframe { position: absolute; left: 0; top: 0; width: 1440px; height: 920px; border: 0; transform-origin: 0 0; pointer-events: none; }
+  .info { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .info h2 { margin: 0; font-size: 18px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
+  .info p { margin: 0; color: var(--muted); }
+  .info ul { margin: 6px 0 0; padding-left: 18px; color: var(--text-2); font-size: 13px; display: grid; gap: 3px; }
+  .info .go { margin-top: auto; padding-top: 12px; color: var(--gold-2); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+  section.notes { margin-top: 56px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .note { padding: 18px; } .note h3 { margin: 10px 0 6px; font-size: 15px; } .note p { margin: 0; color: var(--muted); font-size: 13.5px; }
+  .note .state-ico { width: 38px; height: 38px; border-radius: 11px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="logo" data-i="bolt"></span><span class="brand-name">PathRise<small>Earlier samples</small></span><span class="top-spacer"></span>
+    <div class="seg" role="group" aria-label="Detail level"><button data-mode-set="beginner">Simple</button><button data-mode-set="pro">Pro</button></div>
+    <button class="icon-btn" data-theme-toggle></button>
+  </header>
+
+  <div class="hero">
+    <span class="pill gold"><i></i>Earlier samples · <a href="index.html">Open the product site</a></span>
+    <h1>Make people <em>watch an AI trader think</em>, then trust it.</h1>
+    <p>Your reinforcement-learning agent already produces regimes, gating decisions and SHAP explanations. These samples put that reasoning on screen — calm dark by default, gold for the AI, green and red only for money. Toggle <b>Simple / Pro</b> and light / dark on any page.</p>
+    <div class="swatches" aria-label="Palette">
+      <span class="sw"><i style="background:var(--bg)"></i>Calm dark</span><span class="sw"><i style="background:var(--gold)"></i>Gold · brand and AI</span><span class="sw"><i style="background:var(--up)"></i>Profit / BUY</span><span class="sw"><i style="background:var(--down)"></i>Loss / SELL</span><span class="sw"><i style="background:var(--hold)"></i>HOLD / neutral</span><span class="sw"><i style="background:var(--warn)"></i>Warning</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <a class="card sample" href="concept-a-desk.html">
+      <div class="thumb" data-thumb><iframe src="concept-a-desk.html?mode=pro" title="Concept A preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="info"><h2>A · Desk <span class="pill up">Closest to today</span></h2><p>Your current shell, refined: collapsible rail, KPI strip, agent-vs-SPY chart, an "Agent brain" panel and a live decision feed.</p>
+        <ul><li>Paper book becomes a popover — reachable from every page</li><li>Loading, empty and error states built in</li><li>Clawbot dock with / tools and @ agents</li></ul><span class="go">Open sample <span data-i="next" data-s="16"></span></span></div>
+    </a>
+    <a class="card sample" href="concept-b-cockpit.html">
+      <div class="thumb" data-thumb><iframe src="concept-b-cockpit.html?mode=pro" title="Concept B preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="info"><h2>B · Cockpit <span class="pill gold">The "wow" one</span></h2><p>Top-nav layout that makes the agent the hero: a decision ring, a six-step gating pipeline and a clickable 30-stock universe heat-map.</p>
+        <ul><li>Click any stock — the ring and gates update</li><li>Shows <i>why</i> the agent is holding, not just that it is</li><li>Best for demos and first impressions</li></ul><span class="go">Open sample <span data-i="next" data-s="16"></span></span></div>
+    </a>
+    <a class="card sample" href="concept-c-explainer.html">
+      <div class="thumb" data-thumb><iframe src="concept-c-explainer.html?mode=pro" title="Concept C preview" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="info"><h2>C · Decision Explainer <span class="pill hold">Trust builder</span></h2><p>One trade, fully explained: three plain-English reasons, a SHAP waterfall, safety checks, stop-loss guard-rails and a counterfactual.</p>
+        <ul><li>Simple mode hides raw values; Pro shows everything</li><li>Older / Newer, breadcrumb and Back — never a dead end</li><li>"Ask Clawbot" pre-fills the chat</li></ul><span class="go">Open sample <span data-i="next" data-s="16"></span></span></div>
+    </a>
+  </div>
+
+  <section class="notes" aria-label="Design principles">
+    <div class="card note"><div class="state-ico"><span data-i="spark" data-s="19"></span></div><h3>Gold means "the AI"</h3><p>One accent, one meaning. Green/red are reserved for P&amp;L and BUY/SELL; HOLD is a calm blue-grey so it never reads as a warning.</p></div>
+    <div class="card note"><div class="state-ico"><span data-i="oversight" data-s="19"></span></div><h3>Two depths, one product</h3><p>Retail users get plain English and fewer numbers. Semi-pros flip to Pro for probabilities, SHAP values, entropy and stop levels.</p></div>
+    <div class="card note"><div class="state-ico"><span data-i="alert" data-s="19"></span></div><h3>Honest edge cases</h3><p>If the agent is collapsing to HOLD or the stream drops, the UI says so and explains what is safe — instead of an empty chart.</p></div>
+  </section>
+</div>
+<script src="shared.js"></script>
+<script>
+  PR.mount({ rail: false, dock: false });
+  const fit = () => PR.$$("[data-thumb]").forEach((t) => { const f = t.querySelector("iframe"); f.style.transform = `scale(${t.clientWidth / 1440})`; });
+  fit(); addEventListener("resize", fit);
+  const sync = () => PR.$$("[data-thumb] iframe").forEach((f) => { try { f.contentWindow.PR && f.contentWindow.PR.setTheme(document.documentElement.dataset.theme === "light" ? "light" : "dark"); } catch {} });
+  document.addEventListener("pr:theme", sync);
+</script>
+</body>
+</html>

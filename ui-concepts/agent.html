@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="app"><main class="page">
+  <div class="page-head"><div><h1>Balanced</h1><p>Model card · PPO with a temporal-convolution policy · paper</p></div><span class="pill gold"><i></i>ckpt_8</span></div>
+  <div class="grid-3">
+    <div class="card"><div class="card-b"><div class="eyebrow">Lineage</div><p>Rules mentor → PPO Quick Train run_1842 → checkpoint ckpt_8, chosen for exam Sharpe.</p></div></div>
+    <div class="card"><div class="card-b"><div class="eyebrow">Strongest</div><p>Trend days. Exam return +2.4% when the regime label is trend.</p></div></div>
+    <div class="card"><div class="card-b"><div class="eyebrow">Weakest</div><p>High volatility. Exam return −0.4%. It should stand aside there, and sometimes it does not.</p></div></div>
+  </div>
+  <section class="card"><div class="card-h"><h2>Versions</h2></div><div class="card-b tbl-wrap"><table class="tbl"><thead><tr><th>Checkpoint</th><th>When</th><th class="r">Exam Sharpe</th><th></th></tr></thead><tbody>
+    <tr><td class="num">ckpt_8</td><td>Best on the exam</td><td class="r num">0.81</td><td><a href="report.html">Card</a></td></tr>
+    <tr><td class="num">ckpt_6</td><td>Before the entropy boost</td><td class="r num">0.22</td><td><a href="arena.html?state=finished">Arena</a></td></tr>
+    <tr><td class="num">ckpt_3</td><td>First green episode</td><td class="r num">−0.11</td><td><span class="muted">Kept for resume</span></td></tr>
+  </tbody></table></div></section>
+  <section class="card"><div class="card-b"><p class="muted" style="margin:0">Clawbot is hidden on this page so the model card stays the whole screen. Open it from any other page.</p></div></section>
+</main></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>PR.bootSite({ shell: true, active: "agent", agent: true });</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Broker · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="app"><main class="page">
+  <div class="page-head"><div><h1>Broker</h1><p>Paper endpoint only. Keys stay in an encrypted store, never in the page source.</p></div><span class="pill up"><i></i>Paper connected</span></div>
+  <div class="grid-2">
+    <section class="card"><div class="card-h"><h2>Alpaca paper</h2></div><div class="card-b">
+      <form id="f" style="display:grid;gap:12px">
+        <div class="field"><label>Endpoint</label><input value="https://paper-api.alpaca.markets" readonly></div>
+        <div class="field"><label for="key">Key id</label><input id="key" value="PK········RDK5" autocomplete="off"></div>
+        <div class="field pw"><label for="sec">Secret</label><input id="sec" type="password" value="stored-not-shown"><button type="button" data-toggle-pw="sec">Show</button></div>
+        <div style="display:flex;gap:8px"><button class="btn btn-gold" type="submit">Save paper keys</button><button class="btn" type="button" data-soon="OAuth">Connect with OAuth</button></div>
+      </form>
+      <p class="muted">This prototype does not send keys anywhere.</p></div></section>
+    <section class="card lock"><div class="card-h"><h2>Live account</h2><span class="pill warn"><i></i>Coming later</span></div>
+      <div class="card-b"><p>Live routing is locked until Oversight is green, and it is not part of this build.</p><a class="btn" href="oversight.html">See the checklist</a></div></section>
+  </div>
+  <section class="card"><div class="card-h"><h2>Order log</h2><span class="sub">Paper</span></div><div class="card-b tbl-wrap"><table class="tbl"><thead><tr><th>Time</th><th>Side</th><th>Name</th><th class="r">Qty</th><th>Status</th></tr></thead><tbody>
+    <tr><td class="num">15:02</td><td class="act hold">HOLD</td><td>META</td><td class="r num">0</td><td>Gate blocked</td></tr>
+    <tr><td class="num">14:10</td><td class="act buy">BUY</td><td>XOM</td><td class="r num">55</td><td>Filled</td></tr>
+    <tr><td class="num">13:30</td><td class="act sell">SELL</td><td>AMD</td><td class="r num">45</td><td>Filled</td></tr>
+    <tr><td class="num">09:48</td><td class="act buy">BUY</td><td>NVDA</td><td class="r num">60</td><td>Filled</td></tr>
+  </tbody></table></div></section>
+</main></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+PR.bootSite({ shell: true, active: "broker" });
+document.getElementById("f").onsubmit=(e)=>{e.preventDefault(); PR.toast("Paper keys saved locally in this prototype. Nothing was uploaded.");};
+</script>
+</body>
+</html>

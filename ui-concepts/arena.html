@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Arena · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+<style>
+  .arena-top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; position: sticky; top: 58px; z-index: 15; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); padding: 8px 0; }
+  .scrub { width: 100%; accent-color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="app"><main class="page" id="main"></main></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script src="fixtures/run.js"></script>
+<script>
+PR.bootSite({ shell: true, active: "training" });
+const q = new URLSearchParams(location.search);
+let mode = q.get("state") || (q.get("start") ? "queued" : "running");
+let speed = 1, cursor = 0, timer = null, scrub = 70;
+if (mode === "finished" || mode === "failed" || mode === "paused" || mode === "offline") cursor = window.QUICK_RUN.length;
+const events = window.QUICK_RUN;
+const stages = ["data","mentor","practice","exam","report"];
+function seen() { return events.slice(0, cursor); }
+function last(type) { return [...seen()].reverse().find((e) => e.type === type); }
+function rolls() { return seen().filter((e) => e.type === "rollout.metrics"); }
+function paint() {
+  const st = last("stage.changed");
+  const stage = mode === "finished" ? "report" : (st ? st.stage : "data");
+  const roll = rolls().at(-1);
+  const step = roll ? roll.step : 0;
+  const total = 20000;
+  const coaches = seen().filter((e) => e.type === "coach.event");
+  const ckpts = seen().filter((e) => e.type === "checkpoint.saved");
+  const health = !roll ? ["info","Starting","Waiting for the first rollout."] :
+    roll.hold > 0.75 ? ["bad","Collapsed","HOLD is above 75%. Exploration was raised." ] :
+    (roll.train_ret - roll.val_ret) > 2 ? ["warn","Overfitting","Train is pulling away from the exam window."] :
+    roll.ep_rew_mean < 0 && cursor > 4 ? ["warn","Plateau","Reward is flat. Give it another rollout before you stop."] :
+    ["ok","Healthy","Reward is rising and the exam is keeping up."];
+  const banner = {
+    queued: `<div class="banner info" role="status">Queued behind 1 Deep Train. ETA 2 min. You can leave this tab.</div>`,
+    loading: `<div class="card"><div class="card-b" style="display:grid;gap:8px"><div class="skeleton" style="height:18px;width:40%"></div><div class="skeleton" style="height:220px"></div></div></div>`,
+    paused: `<div class="banner warn" role="status">Paused at step ${step.toLocaleString()}. The checkpoint is safe. Resume continues the same seed.</div>`,
+    failed: `<div class="banner" role="alert">${window.RUN_FAIL[0].message} <button class="btn btn-sm" id="resume">Resume from ckpt_3</button></div>`,
+    offline: `<div class="banner" role="alert">Stream interrupted. Reconnecting and catching up from step ${step.toLocaleString()}.</div>`,
+    finished: `<div class="verdict"><div class="eyebrow">Exam verdict · deterministic</div><h2>It learned to trade less randomly.</h2><p style="margin:0">Held-out return <b class="num">+2.1%</b>, Sharpe <b class="num">0.81</b>, max drawdown <b class="num">−3.4%</b>. Train return was +4.2%, so the gap is 2.1 points. <a href="report.html">Open the report card</a></p></div>`
+  }[mode] || "";
+  document.getElementById("main").innerHTML = `
+    <div class="arena-top">
+      <div><b>Quick Train · Balanced</b><div class="muted" style="font-size:12px">run_1842 · seed 42</div></div>
+      <div class="steps">${stages.map((s) => `<span class="step-pip ${s===stage?"on":""} ${stages.indexOf(s)<stages.indexOf(stage)?"done":""}"><span class="n">${stages.indexOf(s)+1}</span>${s}</span>`).join("")}</div>
+      <span class="pill ${mode==="failed"?"down":mode==="finished"?"up":"gold"}"><i></i>${mode}</span>
+      <b class="num">${step.toLocaleString()} / ${total.toLocaleString()}</b>
+      <span class="muted num">${roll?roll.fps.toFixed(1):"—"} steps/s</span>
+      <span style="flex:1"></span>
+      <button class="btn btn-sm" id="pause">${mode==="paused"?"Resume":"Pause"}</button>
+      <button class="btn btn-sm" id="stop">Stop</button>
+      <button class="btn btn-sm" data-soon="Save checkpoint">Save</button>
+      <button class="btn btn-sm" data-soon="Fork">Fork</button>
+    </div>
+    <div class="seg" id="modes">${["queued","loading","running","paused","failed","offline","finished"].map((m)=>`<button data-m="${m}" class="${m===mode?"on":""}">${m}</button>`).join("")}</div>
+    ${mode === "running" ? "" : banner}
+    <div class="grid-main" style="${mode === "loading" || mode === "queued" ? "display:none" : ""}">
+      <section class="card"><div class="card-h"><h2>The Gym</h2><span class="sub">NVDA episode replay</span></div>
+        <div class="card-b"><div class="chart" id="gym"></div>
+          <input class="scrub" id="scrub" type="range" min="1" max="70" value="${scrub}">
+          <div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-sm" data-sp="1">1×</button><button class="btn btn-sm" data-sp="4">4×</button><button class="btn btn-sm" data-sp="10">Max</button></div>
+          <p class="muted" style="font-size:12.5px">Paper P&L on this episode <b class="num" id="epnl">—</b></p></div></section>
+      <section style="display:grid;gap:16px">
+        <section class="card"><div class="card-h"><h2 id="curve-title">Reward</h2><div class="seg" id="metric"><button data-k="ep_rew_mean" class="on">Reward</button><button data-k="ret">Return</button><button data-k="sharpe">Sharpe</button><button data-k="entropy">Entropy</button><button data-k="value_loss">Value loss</button></div></div>
+          <div class="card-b"><div class="chart" id="curve"></div><p class="beginner-only muted">Gold is what the bot feels. The dashed line is the held-out window, when we have it.</p></div></section>
+        <section class="card"><div class="card-h"><h2>Behaviour mix</h2><span class="sub">BUY / HOLD / SELL</span></div><div class="card-b"><div id="mix" style="display:grid;gap:6px"></div></div></section>
+      </section>
+      <aside style="display:grid;gap:16px;align-content:start">
+        <div class="health ${health[0]==="ok"?"ok":health[0]==="bad"?"bad":health[0]==="warn"?"warn":"info"}"><div><b>${health[1]}</b><div>${health[2]}</div>${health[0]==="bad"?`<button class="btn btn-sm" id="fix" style="margin-top:8px">Keep the entropy boost</button>`:""}</div></div>
+        <section class="card"><div class="card-h"><h2>Coach</h2></div><div class="card-b coach">${coaches.length?coaches.map((c)=>`<div class="ev"><small>Step ${c.step.toLocaleString()}</small>${c.text}</div>`).join(""):`<div class="ev">The coach speaks when a callback changes the run.</div>`}</div></section>
+        <section class="card"><div class="card-h"><h2>Checkpoints</h2></div><div class="card-b">${ckpts.map((c)=>`<div class="ck"><span><b class="num">${c.id}</b><br><span class="muted">step ${c.step.toLocaleString()} · ${c.note}</span></span><button class="btn btn-sm" data-soon="Compare ${c.id}">Compare</button></div>`).join("")||`<span class="muted">None yet.</span>`}</div></section>
+        <section class="card pro-only"><div class="card-h"><h2>What it is learning</h2></div><div class="card-b"><p class="muted" style="margin:0">Top push toward BUY, latest exam: volume ratio, MACD histogram, SPY context. RSI fell out of the top three after step 12,288.</p></div></section>
+      </aside>
+    </div>
+    <section class="card"><div class="card-h"><h2>Milestones</h2></div><div class="card-b steps">
+      <span class="step-pip ${step>=6144?"done":""}"><span class="n">1</span>First green episode</span>
+      <span class="step-pip ${step>=14336?"done":""}"><span class="n">2</span>Stopped over-holding</span>
+      <span class="step-pip ${mode==="finished"?"done":""}"><span class="n">3</span>Beat a flat book on the exam</span>
+    </div></section>`;
+  bind();
+}
+function bind() {
+  const modes = document.getElementById("modes");
+  if (modes) modes.onclick = (e) => { const b = e.target.closest("[data-m]"); if (!b) return; mode = b.dataset.m; if (mode==="running") play(); else { stop(); if (mode!=="queued" && mode!=="loading") { cursor = events.length; scrub = 70; } } paint(); draw(); };
+  const p = document.getElementById("pause");
+  if (p) p.onclick = () => { if (mode==="paused") { mode="running"; play(); } else { mode="paused"; stop(); } paint(); draw(); };
+  const s = document.getElementById("stop");
+  if (s) s.onclick = () => { mode="finished"; stop(); paint(); draw(); };
+  const r = document.getElementById("resume");
+  if (r) r.onclick = () => { mode="running"; cursor=Math.max(cursor,4); play(); paint(); draw(); };
+  const f = document.getElementById("fix");
+  if (f) f.onclick = () => PR.toast("Entropy boost kept at 0.04 for the rest of this run.");
+  document.querySelectorAll("[data-sp]").forEach((b) => b.onclick = () => { speed = +b.dataset.sp; });
+  const sc = document.getElementById("scrub");
+  if (sc) sc.oninput = () => { scrub = +sc.value; drawGym(); };
+  const met = document.getElementById("metric");
+  if (met) met.onclick = (e) => { const b = e.target.closest("[data-k]"); if (!b) return; met.querySelectorAll("button").forEach((x)=>x.classList.toggle("on", x===b)); drawCurve(b.dataset.k); };
+  draw();
+}
+function draw() { drawCurve("ep_rew_mean"); drawGym(); drawMix(); }
+function drawCurve(key) {
+  const el = document.getElementById("curve"); if (!el) return;
+  const rs = rolls();
+  const title = document.getElementById("curve-title"); if (title) title.textContent = key.replace("ep_rew_mean","Reward");
+  if (rs.length < 2) { el.innerHTML = `<p class="muted">The curve appears after the second rollout.</p>`; return; }
+  const a = rs.map((r) => key==="ret" ? r.train_ret : r[key]);
+  const b = rs.map((r) => key==="ret" ? r.val_ret : r[key] * 0.85);
+  el.innerHTML = "";
+  PR.lineChart(el, { id: "cv"+key+cursor, height: 200, series: [{ data: a, color: "--gold", w: 2.2 }, { data: b, color: "--hold", w: 1.4, dash: true }], xlabels: ["0", rs.at(-1).step.toLocaleString()], fmt: (v)=>v.toFixed(1), tip: (i)=>`<div class="num">Train ${a[i].toFixed(2)}</div><div class="num">Shadow ${b[i].toFixed(2)}</div>` });
+}
+function drawGym() {
+  const el = document.getElementById("gym"); if (!el) return;
+  const replay = [...events].reverse().find((e)=>e.replay);
+  if (!replay) return;
+  const prices = replay.replay.prices.slice(0, Math.max(2, scrub));
+  const marks = replay.replay.trades.filter((t)=>t.i < prices.length);
+  el.innerHTML = "";
+  PR.lineChart(el, { id: "gym"+scrub, height: 200, series: [{ data: prices, color: "--hold", w: 2 }], markers: marks.map((m)=>({i:m.i,a:m.a,p:m.p})), xlabels: ["09:30","12:00","15:30"], fmt: (v)=>"$"+v.toFixed(0), tip: (i)=>`<div class="num">${PR.usd(prices[i])}</div>` });
+  const pnl = document.getElementById("epnl");
+  if (pnl) {
+    let pos = 0, cash = 0;
+    marks.forEach((m) => { if (m.a==="BUY") { pos += 10; cash -= 10*m.p; } else { cash += pos*m.p; pos = 0; } });
+    const last = prices.at(-1); const v = cash + pos*last;
+    pnl.textContent = PR.sgn(v); pnl.className = "num "+PR.cls(v);
+  }
+}
+function drawMix() {
+  const el = document.getElementById("mix"); if (!el) return;
+  el.innerHTML = rolls().map((r)=>`<div style="display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center"><span class="num muted">${(r.step/1000).toFixed(0)}k</span><div class="mix" title="BUY ${r.buy} HOLD ${r.hold} SELL ${r.sell}"><i style="width:${r.buy*100}%;background:var(--up)"></i><i style="width:${r.hold*100}%;background:var(--hold)"></i><i style="width:${r.sell*100}%;background:var(--down)"></i></div></div>`).join("");
+}
+function play() { stop(); timer = setInterval(() => { if (cursor < events.length) { cursor++; scrub = Math.min(70, 8+cursor*3); paint(); } else { mode = "finished"; stop(); paint(); } }, 900/speed); }
+function stop() { if (timer) clearInterval(timer); timer = null; }
+if (mode === "queued") setTimeout(() => { mode = "loading"; paint(); setTimeout(() => { mode = "running"; cursor = 2; play(); }, 800); }, 700);
+else if (mode === "running") { cursor = 3; play(); }
+else paint();
+</script>
+</body>
+</html>

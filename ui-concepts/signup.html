@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create a desk · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+document.getElementById("root").innerHTML = PR.authFrame({
+  title: "Create your desk",
+  lead: "One person, one paper book. You can train more than one bot later.",
+  body: `<form id="f">
+    <div class="field" id="nf"><label for="name">Name</label><input id="name" required value="Faisal A."><span class="err">Add the name you want on the session chip.</span></div>
+    <div class="field" id="ef"><label for="email">Email</label><input id="email" type="email" required value="faisal@pathrise.dev"><span class="err">Use a real email. We send one verification link.</span></div>
+    <div class="field pw"><label for="pw">Password</label><input id="pw" type="password" required value="paper-session-42"><button type="button" data-toggle-pw="pw">Show</button>
+      <div class="strength" aria-hidden="true"><i></i><i></i><i></i><i></i></div><span class="hint" id="ph">12+ characters, mixed case and a number.</span></div>
+    <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px"><input type="checkbox" id="terms" required> I understand this is a simulator, not advice, and live trading is locked.</label>
+    <button class="btn btn-gold" type="submit">Create desk</button>
+  </form>`,
+  foot: `Already have a desk? <a href="login.html">Log in</a>`
+});
+PR.bootSite({ dock: false });
+const pw = document.getElementById("pw");
+pw.addEventListener("input", () => {
+  const v = pw.value; let s = 0; if (v.length >= 8) s++; if (v.length >= 12) s++; if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++; if (/\d/.test(v)) s++;
+  document.querySelectorAll(".strength i").forEach((el, i) => { el.className = i < s ? "on" + s : ""; });
+  document.getElementById("ph").textContent = ["Too short", "Still short", "Add mixed case or a number", "Good enough for a paper desk", "Strong"][s];
+});
+pw.dispatchEvent(new Event("input"));
+document.getElementById("f").onsubmit = (e) => { e.preventDefault(); location.href = "verify.html"; };
+</script>
+</body>
+</html>

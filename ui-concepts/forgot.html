@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forgot password · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+function paint(sent) {
+  document.getElementById("root").innerHTML = PR.authFrame({
+    title: sent ? "Reset link sent" : "Reset your password",
+    lead: sent ? "If faisal@pathrise.dev has a desk, the link is on its way. It expires in 30 minutes." : "We will email a link. We will not say whether the address exists.",
+    body: sent ? `<a class="btn btn-gold" href="reset.html">Open the prototype link</a><button class="btn" id="again">Send again</button>` : `<form id="f"><div class="field"><label for="email">Email</label><input id="email" type="email" required value="faisal@pathrise.dev"></div><button class="btn btn-gold" type="submit">Send reset link</button></form>`,
+    foot: `<a href="login.html">Back to log in</a>`
+  });
+  PR.bootSite({ dock: false });
+  const f = document.getElementById("f"); if (f) f.onsubmit = (e) => { e.preventDefault(); paint(true); };
+  const a = document.getElementById("again"); if (a) a.onclick = () => PR.toast("Sent again. Check the same inbox.");
+}
+paint(false);
+</script>
+</body>
+</html>

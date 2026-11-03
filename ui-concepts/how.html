@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How it works · PathRise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="nav"></div>
+<main class="page">
+  <div class="page-head"><div><h1>How a PathRise bot is made</h1><p>The same loop the research code already runs, shown as five stages.</p></div>
+    <div class="seg" role="group" aria-label="Detail level"><button data-mode-set="beginner">Simple</button><button data-mode-set="pro">Pro</button></div>
+  </div>
+  <div class="steps" id="stages"></div>
+  <section class="card"><div class="card-b" id="stage-body"></div></section>
+  <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="prev">Previous stage</button><button class="btn btn-gold" id="next">Next stage</button><a class="btn" href="signup.html">Start with a template</a></div>
+</main>
+<script src="shared.js"></script><script src="site.js"></script>
+<script>
+  document.getElementById("nav").outerHTML = PR.publicNav();
+  PR.bootSite({ dock: false });
+  const stages = [
+    ["Data", "The bot only sees a fixed universe and a frozen feature cache, so two runs can be compared.", "OHLCV plus RSI, MACD, Bollinger, ATR, volume ratio, time of day and SPY context. 15 features in the daily setup."],
+    ["Mentor", "Optional warm start. A simple rule-based teacher shows a few good habits before PPO takes over.", "Behavioural cloning in run_bc.py. Targets about 15% buys, 15% sells, 70% holds so the policy does not start from noise."],
+    ["Practice", "PPO practices on the training window. You watch reward, entropy and the mix of BUY, HOLD and SELL.", "Updates arrive each rollout (n_steps 2048). Adaptive callbacks can raise entropy if the bot collapses into HOLD."],
+    ["Exam", "A held-out window the bot did not train on. This number is the one that counts.", "Deterministic evaluation is the headline. Stochastic evaluation is stored as a diagnostic, not the score."],
+    ["Paper", "If the exam clears the checklist, the saved policy paper-trades with the same stops and size caps.", "Alpaca paper is the broker adapter. Live routing stays locked."]
+  ];
+  let i = 0;
+  const paint = () => {
+    document.getElementById("stages").innerHTML = stages.map((s, k) => `<span class="step-pip ${k < i ? "done" : ""} ${k === i ? "on" : ""}"><span class="n">${k + 1}</span>${s[0]}</span>`).join("");
+    const s = stages[i];
+    document.getElementById("stage-body").innerHTML = `<div class="eyebrow">Stage ${i + 1} of 5</div><h2 style="margin:6px 0 8px">${s[0]}</h2><p style="font-size:16px;max-width:640px">${s[1]}</p><p class="pro-only muted">${s[2]}</p><p class="beginner-only muted">Switch to Pro if you want the research names behind this stage.</p>`;
+  };
+  paint();
+  document.getElementById("prev").onclick = () => { i = Math.max(0, i - 1); paint(); };
+  document.getElementById("next").onclick = () => { i = Math.min(stages.length - 1, i + 1); paint(); };
+</script>
+</body>
+</html>
