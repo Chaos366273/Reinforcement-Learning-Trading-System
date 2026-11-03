@@ -13,19 +13,18 @@
 <script>
 document.getElementById("root").innerHTML = PR.authFrame({
   title: "Confirm it is you",
-  lead: "Enter the 6-digit code from your authenticator. This prototype accepts 482913.",
-  body: `<form id="f"><div class="field" id="cf"><label for="code">Authenticator code</label><input id="code" class="num" inputmode="numeric" maxlength="6" required><span class="err">That code is wrong or expired.</span></div>
-    <button class="btn btn-gold" type="submit">Continue</button></form>
-    <button class="btn" id="backup">Use a backup code</button>
-    <div id="bak" hidden class="field"><label for="bcode">Backup code</label><input id="bcode" placeholder="XXXX-XXXX"></div>`,
+  lead: "This preview has no real authenticator. Open the desk, or type any 6 digits.",
+  body: `<a class="btn btn-gold" href="desk.html">Open the desk</a>
+    <form id="f"><div class="field" id="cf"><label for="code">Authenticator code</label><input id="code" class="num" inputmode="numeric" maxlength="6" placeholder="Any 6 digits"><span class="err">Use 6 digits, or tap Open the desk.</span></div>
+    <button class="btn" type="submit">Continue with code</button></form>
+    <a href="arena.html?state=finished">Watch a bot learn instead</a>`,
   foot: `<a href="login.html">Back to log in</a>`
 });
 PR.bootSite({ dock: false });
-document.getElementById("backup").onclick = () => { document.getElementById("bak").hidden = false; };
 document.getElementById("f").onsubmit = (e) => {
   e.preventDefault();
-  const c = document.getElementById("code").value;
-  if (c !== "482913") { document.getElementById("cf").classList.add("bad"); return; }
+  const c = document.getElementById("code").value.replace(/\s/g, "");
+  if (c.length < 6) { document.getElementById("cf").classList.add("bad"); return; }
   location.href = "desk.html";
 };
 </script>

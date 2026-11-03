@@ -43,7 +43,7 @@ function paint() {
     if (state === "offline") return PR.toast("Saved. We will retry when you are back online.");
     if (state === "locked" || state === "limit" || state === "bad") return;
     busy = true; paint(); PR.bootSite({ dock: false });
-    setTimeout(() => { location.href = "twofa.html"; }, 700);
+    setTimeout(() => { location.href = "desk.html"; }, 400);
   };
 }
 paint();

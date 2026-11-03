@@ -16,14 +16,15 @@ function paint() {
   document.getElementById("root").innerHTML = PR.authFrame({
     title: "Check your email",
     lead: "We sent a 6-digit code to faisal@pathrise.dev. It expires in 15 minutes.",
-    body: `<form id="f"><div class="field"><label for="code">Code</label><input id="code" class="num" inputmode="numeric" maxlength="6" placeholder="000000" required></div>
-      <button class="btn btn-gold" type="submit">Verify</button></form>
+    body: `<a class="btn btn-gold" href="onboarding.html">Continue to setup</a>
+      <form id="f"><div class="field"><label for="code">Code</label><input id="code" class="num" inputmode="numeric" maxlength="6" placeholder="Any 6 digits"></div>
+      <button class="btn" type="submit">Verify code</button></form>
       <button class="btn" id="resend" ${left ? "disabled" : ""}>${left ? "Resend in " + left + "s" : "Resend code"}</button>
       <a href="signup.html">Use a different email</a>`,
     foot: `<a href="login.html">Back to log in</a>`
   });
   PR.bootSite({ dock: false });
-  document.getElementById("f").onsubmit = (e) => { e.preventDefault(); const c = document.getElementById("code").value; if (c === "000000" || c.length < 6) return PR.toast("That code is not valid. Try 482913 for this prototype."); location.href = "onboarding.html"; };
+  document.getElementById("f").onsubmit = (e) => { e.preventDefault(); const c = document.getElementById("code").value.replace(/\s/g, ""); if (c.length < 6) return PR.toast("Enter any 6 digits, or tap Continue to setup."); location.href = "onboarding.html"; };
   document.getElementById("resend").onclick = () => { left = 30; PR.toast("Code sent again."); paint(); const t = setInterval(() => { left--; if (left <= 0) clearInterval(t); paint(); }, 1000); };
 }
 paint();
