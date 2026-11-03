@@ -52,7 +52,7 @@ function paint() {
       <div><b>Quick Train · Balanced</b><div class="muted" style="font-size:12px">run_1842 · seed 42</div></div>
       <div class="steps">${stages.map((s) => `<span class="step-pip ${s===stage?"on":""} ${stages.indexOf(s)<stages.indexOf(stage)?"done":""}"><span class="n">${stages.indexOf(s)+1}</span>${s}</span>`).join("")}</div>
       <span class="pill ${mode==="failed"?"down":mode==="finished"?"up":"gold"}"><i></i>${mode}</span>
-      <b class="num">${step.toLocaleString()} / ${total.toLocaleString()}</b>
+      <b class="num">${Math.min(step, total).toLocaleString()} / ${total.toLocaleString()}</b>
       <span class="muted num">${roll?roll.fps.toFixed(1):"—"} steps/s</span>
       <span style="flex:1"></span>
       <button class="btn btn-sm" id="pause">${mode==="paused"?"Resume":"Pause"}</button>
